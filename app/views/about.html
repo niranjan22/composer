@@ -1,0 +1,12 @@
+<div class="container-fluid">
+  <div ng-controller="AboutCtrl">
+    <p>Authors.</p>
+    <div>
+      <ul ng-repeat="author in authors">
+        <li>{{author}}</li>
+      </ul>
+      <pre id="default-spacing">{{ authors | json }}</pre>
+    </div>
+    
+  </div>
+</div>
