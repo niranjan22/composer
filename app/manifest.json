@@ -1,0 +1,8 @@
+{
+  "name": "Seeki Composer",
+  "browser_action": {
+    "default_icon": {          
+      "64": "favicon.ico"
+    }
+  }
+}
