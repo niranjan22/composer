@@ -9,26 +9,20 @@
  */
 angular.module('composerApp')
   .controller('ProjectCtrl', function ($scope, $modal, $log, changeCase) {
-    $scope.project = {name: 'Project1', models: [], views: [], menus: []};
+    $scope.project = {name: 'Project1', models: [], views: [], menus: [], controllers: []};
 
-    /*
-    var testString = 'raja sekaran';
-    console.log('paramCase', changeCase.paramCase(testString));
-    console.log('pascalCase', changeCase.pascalCase(testString));
-    console.log('pluralize1');
-    console.log('pluralize', pluralize('category'));
-    console.log('pluralize2'); 
-    */
-    
     var taxes = [
-            { amount: 25, currencyCode: "USD", decimalPlaces: 0, taxCode: "YRI"},
-            { amount: 25, currencyCode: "USD", decimalPlaces: 0, taxCode: "YRI"},
-            { amount: 10, currencyCode: "USD", decimalPlaces: 0, taxCode: "YRI"}
+            { amount: 25, currencyCode: "USD", decimalPlaces: 1, taxCode: "YRI"},
+            { amount: 25, currencyCode: "USD", decimalPlaces: 2, taxCode: "YRI"},
+            { amount: 10, currencyCode: "USD", decimalPlaces: 3, taxCode: "YRI"}
         ];
+        
     var totalTaxes = taxes.reduce(function (sum, tax) {
-      return sum + tax.amount;
+        return sum + tax.decimalPlaces + tax.amount;
     }, 0);
-    console.log('totalTaxes', totalTaxes);
+
+    
+    console.log('taxes.reduce', totalTaxes);
     
     $scope.selectedModel = null;
     $scope.selectedModelIndex = null;
@@ -41,13 +35,17 @@ angular.module('composerApp')
       var blob = new Blob([$scope.toJSON], { type:"application/json;charset=utf-8;" });			
 			var downloadLink = angular.element('<a></a>');
                         downloadLink.attr('href',window.URL.createObjectURL(blob));
-                        downloadLink.attr('download', $scope.project.name + '-meta-model.json');
+                        downloadLink.attr('download', $scope.project.name + '.json');
 			downloadLink[0].click();
 		};    
     
     $scope.viewJSON = function () {
       $scope.viewJSONValue = !$scope.viewJSONValue;
     };
+    
+    $scope.print = function() {
+      window.print()
+    }     
     
     $scope.displayFileContents = function(contents) {
       var c = angular.fromJson(contents);
@@ -59,6 +57,16 @@ angular.module('composerApp')
     $scope.selectModel = function (data, index) {
       $scope.selectedModelIndex = index;
       $scope.selectedModel = data;
+    };
+    
+    $scope.selectController = function (data, index) {
+      
+      $scope.selectedControllerIndex = index;
+      $scope.selectedController = data;
+      
+      console.log('selectedController', $scope.selectedController);
+      console.log('selectedControllerIndex', $scope.selectedControllerIndex);
+      
     };
     
     $scope.searchMenu = function () {
@@ -77,6 +85,10 @@ angular.module('composerApp')
       $scope.searchControlValue = !$scope.searchControlValue;
     };
     
+    $scope.searchLookup = function () {
+      $scope.searchLookupValue = !$scope.searchLookupValue;
+    };
+    
     $scope.searchModel = function () {
       $scope.searchModelValue =  !$scope.searchModelValue;
     };
@@ -85,6 +97,76 @@ angular.module('composerApp')
       $scope.searchElementValue =  !$scope.searchElementValue;
     };
     
+    $scope.searchController = function () {
+      $scope.searchControllerValue =  !$scope.searchControllerValue;
+    };
+    
+    $scope.searchServices = function () {
+      $scope.searchServicesflag =  !$scope.searchServicesflag;
+    };
+
+    $scope.newservice = function () {
+      var modalInstance = $modal.open({
+        animation: false,
+        templateUrl: 'serviceContent.html',
+        controller: 'ServiceInstanceCtrl',
+        size: 'sm',
+        resolve: {
+          service: function () {
+            var service = {servicename: '', 
+                            modelname: $scope.selectedController.modelname, 
+                            models: $scope.project.models};
+            return service;
+          }          
+        }
+      });
+
+      modalInstance.result.then(function (data) {
+        var service = {servicename: data.servicename};
+        $scope.selectedController.services.push(service);
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });          
+    };
+
+    $scope.editservice = function (service, index) {
+      
+      $scope.selectedServiceIndex = index;
+      $scope.selectedService = service;
+      var data = service;
+      var modalInstance = $modal.open({
+        animation: false,
+        templateUrl: 'serviceContent.html',
+        controller: 'ServiceInstanceCtrl',
+        size: 'sm',
+        resolve: {
+          service: function () {
+            return {servicename: data.servicename, 
+                    modelname: $scope.selectedController.modelname,
+                    models: $scope.project.models};
+          }
+        }
+      });
+
+      modalInstance.result.then(function (data) {
+        var service = {servicename: data.servicename};
+        $scope.selectedController.services[$scope.selectedServiceIndex] = service;
+        
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });          
+
+    };
+    
+    $scope.removeservice = function (index) {
+      $scope.selectedController.services.splice(index, 1);
+    };
+    
+    $scope.removeallservices = function () {
+      $scope.selectedController.services.splice(0);
+    };
+    
+    //model functions starts here
     $scope.newmodel = function () {
       
       var modalInstance = $modal.open({
@@ -107,7 +189,7 @@ angular.module('composerApp')
                       parampluralname: changeCase.paramCase(pluralize(data.name)),
                       camelcasename: changeCase.camelCase(data.name),
                       elements: []};
-        $scope.project.models.push(model);
+        $scope.project.models.splice(0,0,model);
         $scope.selectedModel = model;
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
@@ -166,6 +248,7 @@ angular.module('composerApp')
     $scope.removeallmodels = function () {
       $scope.project.models.splice(0);
     };
+    // model functions ends here
     
     //element related functions start
     $scope.newelement = function () {
@@ -176,15 +259,21 @@ angular.module('composerApp')
         size: 'sm',
         resolve: {
           element: function () {
-            var e = {elementname: '', elementtype: ''};
+            var e = {elementname: '', 
+                      elementtype: '',
+                      schemaobjref: '',
+                      modelname: $scope.selectedModel.name, 
+                      models: $scope.project.models};
             return e;
           }
         }
       });
 
       modalInstance.result.then(function (element) {
-        element.elementname = changeCase.camelCase(element.elementname.replace(/ /g, ''));
-        $scope.selectedModel.elements.push(element);
+        var e = {elementname: changeCase.camelCase(element.elementname.replace(/ /g, '')), 
+                elementtype: element.elementtype,
+                schemaobjref: element.schemaobjref};
+        $scope.selectedModel.elements.push(e);
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
       });
@@ -201,15 +290,20 @@ angular.module('composerApp')
         resolve: {
           element: function () {
             var e = {elementname: data.elementname, 
-                      elementtype: data.elementtype};
+                      elementtype: data.elementtype,
+                      schemaobjref: data.schemaobjref,
+                      modelname: $scope.selectedModel.name,
+                      models: $scope.project.models};
             return e;
           }
         }
       });
 
       modalInstance.result.then(function (element) {
-        element.elementname = changeCase.camelCase(element.elementname);
-        $scope.selectedModel.elements[index] = element;
+        var e = {elementname: changeCase.camelCase(element.elementname.replace(/ /g, '')), 
+                elementtype: element.elementtype,
+                schemaobjref: element.schemaobjref};
+        $scope.selectedModel.elements[index] = e;
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
       });
@@ -281,28 +375,28 @@ angular.module('composerApp')
                           width       : 3,
                           modelelement: e.elementname,
                           controllabel: changeCase.titleCase(e.elementname),
-                          exampletext : '' };   
+                          exampletext : '',
+                          options: ''};   
                   v.controls.push(c);            
             }
           }
         }
         
-        for (var m = 0; m < $scope.project.menus.length; m++) {
-          if($scope.project.menus[m].menuname === v.menuname) {
-            console.log('v.menuname', v.menuname);
-            for (var sm = 0; sm < $scope.project.menus[m].submenus.length; sm++) {
-              if($scope.project.menus[m].submenus[sm].menuname === v.modelparampluralname) {
-                $scope.project.menus[m].submenus.splic(sm,1);
+        for (var mc = 0; m < $scope.project.menus.length; m++) {
+          if($scope.project.menus[mc].menuname === v.menuname) {
+            for (var sm = 0; sm < $scope.project.menus[mc].submenus.length; sm++) {
+              if($scope.project.menus[mc].submenus[sm].menuname === v.modelparampluralname) {
+                $scope.project.menus[mc].submenus.splice(sm,1);
               }
             }
             var submenu = {mainmenuname: v.menuname, 
                       submenuname: v.modelparampluralname,
                       submenulabel: v.viewname};
-            $scope.project.menus[m].submenus.push(submenu);
+            $scope.project.menus[mc].submenus.push(submenu);
           }
         }
         
-        $scope.project.views.push(v);
+        $scope.project.views.splice(0,0,v);
         $scope.selectedView = v;
         
       }, function () {
@@ -373,10 +467,9 @@ angular.module('composerApp')
         
         for (var m = 0; m < $scope.project.menus.length; m++) {
           if($scope.project.menus[m].menuname === v.menuname) {
-            console.log('v.menuname', v.menuname);
             for (var sm = 0; sm < $scope.project.menus[m].submenus.length; sm++) {
               if($scope.project.menus[m].submenus[sm].menuname === v.modelparampluralname) {
-                $scope.project.menus[m].submenus.splic(sm,1);
+                $scope.project.menus[m].submenus.splice(sm,1);
               }
             }
             var submenu = {mainmenuname: v.menuname, 
@@ -426,7 +519,8 @@ angular.module('composerApp')
                       width: '',
                       modelelement: '',
                       controllabel: '',
-                      exampletext: ''};
+                      exampletext: '',
+                      options: ''};
             return c;
           }
         }
@@ -455,7 +549,8 @@ angular.module('composerApp')
                       width: data.width,
                       modelelement: data.modelelement,
                       controllabel: data.controllabel,
-                      exampletext: data.exampletext};
+                      exampletext: data.exampletext,
+                      options: data.options};
             return c;
           }
         }
@@ -496,8 +591,6 @@ angular.module('composerApp')
 
       modalInstance.result.then(function (view) {
         
-        console.log('view.controls', view.controls);
-        
         var controls = [];
         
         for (var i = 0; i < view.controls.length; i++) {
@@ -506,7 +599,8 @@ angular.module('composerApp')
                     width       : view.controls[i].width,
                     modelelement: view.controls[i].modelelement,
                     controllabel: view.controls[i].controllabel,
-                    exampletext : view.controls[i].exampletext };   
+                    exampletext : view.controls[i].exampletext,
+                    options     : view.controls[i].options};   
           controls.push(c);
         }
         
@@ -518,6 +612,144 @@ angular.module('composerApp')
       
     };
     //control related functions end
+    
+    //lookup related functions start
+    $scope.newlookup = function () {
+      var modalInstance = $modal.open({
+        animation: false,
+        templateUrl: 'lookupContent.html',
+        controller: 'LookupInstanceCtrl',
+        size: 'lg',
+        resolve: {
+          lookup: function () {
+            var l = {lookupname: '', 
+                      expression: ''};
+            return l;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (lookup) {
+        $scope.selectedController.lookups.push(lookup);
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });
+     
+    };
+    
+    $scope.editlookup = function (data, index) {
+    
+      var modalInstance = $modal.open({
+        animation: false,
+        templateUrl: 'lookupContent.html',
+        controller: 'LookupInstanceCtrl',
+        size: 'lg',
+        resolve: {
+          lookup: function () {
+            var l = {lookupname: data.lookupname, 
+                      expression: data.expression};
+            return l;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (lookup) {
+        $scope.selectedController.lookups[index] = lookup;
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });
+    };
+    
+    $scope.removelookup = function (index) {
+      $scope.selectedController.lookups.splice(index, 1);
+    };
+    
+    $scope.removealllookups = function () {
+      $scope.selectedController.lookups.splice(0);
+    };
+    
+    //lookup related functions end
+    
+    //controller related functions starts here
+    $scope.newcontroller = function () {
+      
+      var modalInstance = $modal.open({
+        animation: false,
+        templateUrl: 'controllerContent.html',
+        controller: 'ControllerInstanceCtrl',
+        size: 'sm',
+        resolve: {
+          controller: function () {
+            var controller = {controllername: '', 
+                              modelname: '',
+                              models: $scope.project.models};    
+            return controller;
+          }          
+        }
+      });
+
+      modalInstance.result.then(function (data) {
+        var ct = {controllername: data.controllername,
+                  modelname: data.modelname,
+                  services: [],
+                  lookups: []};
+        $scope.project.controllers.splice(0,0,ct);
+        $scope.selectedController = ct;
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });          
+      
+    };
+
+    $scope.opencontroller = function (controller, index) {
+      
+      $scope.selectedControllerIndex = index;
+      $scope.selectedController = controller;
+      var data = controller;
+      var modalInstance = $modal.open({
+        animation: false,
+        templateUrl: 'controllerContent.html',
+        controller: 'ControllerInstanceCtrl',
+        size: 'sm',
+        resolve: {
+          controller: function () {
+            return {controllername: data.controllername,
+                    modelname: data.modelname,
+                    services: data.services,
+                    models: $scope.project.models,
+                    lookups: $scope.project.lookups};
+          }
+        }
+      });
+
+      modalInstance.result.then(function (controller) {
+        var ct = {controllername: controller.controllername, 
+                  modelname: controller.modelname,
+                  services: controller.services,
+                  lookups: controller.lookups};
+        $scope.project.controllers[$scope.selectedControllerIndex] = ct;
+        $scope.selectedController = ct;
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });          
+
+    };
+    
+    $scope.deletecontroller = function (index) {
+      $scope.project.controllers.splice(index, 1);
+      if($scope.project.controllers.length > 1){
+        $scope.selectedControllerlIndex = index -1;
+        $scope.selectedController = $scope.project.controllers[index];
+      }else{
+        $scope.selectedControllerIndex = null;
+        $scope.selectedController = null;
+      }
+    };
+    
+    $scope.removeallcontrollers = function () {
+      $scope.project.controllers.splice(0);
+    };
+    //controller related functions ends here
     
     //menu related functions start
     $scope.newmenu = function () {
@@ -539,7 +771,8 @@ angular.module('composerApp')
       modalInstance.result.then(function (menu) {
         menu.menuname = menu.menuname.toLowerCase().replace(/ /g, '');
         menu.menulabel = changeCase.titleCase(menu.menulabel);
-        $scope.project.menus.push(menu);
+        $scope.project.menus.splice(0,0,menu);
+        $scope.selectedmenu = menu;
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
       });
@@ -668,6 +901,34 @@ angular.module('composerApp').controller('ModelInstanceCtrl', function ($scope, 
 
 });
 
+angular.module('composerApp').controller('ServiceInstanceCtrl', function ($scope, $modalInstance, service) {
+
+  $scope.service = service;
+  
+  $scope.ok = function () {
+    $modalInstance.close($scope.service);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+
+});
+
+angular.module('composerApp').controller('ControllerInstanceCtrl', function ($scope, $modalInstance, controller) {
+
+  $scope.controller = controller;
+  
+  $scope.ok = function () {
+    $modalInstance.close($scope.controller);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+
+});
+
 angular.module('composerApp').controller('ElementInstanceCtrl', function ($scope, $modalInstance, element) {
 
   $scope.element = element;
@@ -688,6 +949,20 @@ angular.module('composerApp').controller('ViewInstanceCtrl', function ($scope, $
 
   $scope.ok = function () {
     $modalInstance.close( $scope.view );
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+
+});
+
+angular.module('composerApp').controller('LookupInstanceCtrl', function ($scope, $modalInstance, lookup) {
+
+  $scope.lookup = lookup;
+
+  $scope.ok = function () {
+    $modalInstance.close($scope.lookup);
   };
 
   $scope.cancel = function () {

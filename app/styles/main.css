@@ -80,6 +80,20 @@ body {
   .jumbotron {
     border-bottom: 0;
   }
+  /* print only screen*/
+  .print-only{
+    display:none;
+  }
 }
+
+@media print {
+  .no-print{
+    display: none;
+  }
+  .print-only{
+    display:block;
+  }
+}
+
 
 #.form-control { text-transform: capitalize }

@@ -75,7 +75,11 @@ module.exports = function (grunt) {
       },
       livereload: {
         options: {
-          open: true,
+          //open: true,
+          open: {
+            target: 'http://localhost:<%= connect.options.port %>',
+            appName: 'chrome'
+          },
           middleware: function (connect) {
             return [
               connect.static('.tmp'),

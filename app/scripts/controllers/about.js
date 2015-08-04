@@ -15,4 +15,5 @@ angular.module('composerApp')
       'Gladwin'
     ];
     $scope.authors = this.authors;
+    $scope.time = Date.now();
   });
