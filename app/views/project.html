@@ -8,11 +8,121 @@
               <tabset>
                 <tab>
                   <tab-heading>
+                    Menus
+                  </tab-heading>
+                  <div class="panel-body">
+                    <!-- menu starts here -->
+                    <div class="col-md-5">
+                      <script type="text/ng-template" id="menuContent.html">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Menu Details</h3>
+                        </div>
+                        <div class="modal-body">
+
+                          <div class="form-group">
+                            <label for="menu-name">Menu Name</label>
+                            <input ng-model="menu.menuname" type="text" class="form-control" id="menu-name" placeholder="" />
+                          </div>
+                        
+                          <div class="form-group">
+                            <label for="menu-label">Menu Label</label>
+                            <input ng-model="menu.menulabel" type="text" class="form-control" id="menu-label" placeholder="" />
+                          </div>
+                          
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" ng-click="ok()">OK</button>
+                            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                        </div>
+                      </script>
+                     
+                      <div class="table">
+                        <table class="table table-hover">
+                          <thead>
+                            <tr>
+                              <th>Menus  <a ng-click="searchMenu()"><span class="badge">{{ project.menus.length }}</span></a></th>
+                              <th></th>
+                              <th><a ng-click="newmenu()"><span class="glyphicon glyphicon-plus"></span></a></th>
+                              <th><a ng-click="removeallmenus()"><span class="glyphicon glyphicon-trash"></span></a></th>
+                            </tr>
+                            <tr ng-show="searchMenuFlag">
+                              <th colspan="4"><input class="form-control" ng-model="m.menuname" /></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr ng-click="selectMenu($index)" ng-repeat="menu in project.menus | filter: m.menuname">
+                              <td>{{ menu.menulabel }}</td>
+                              <td><span class="badge">{{ menu.submenus.length }}</span></td>
+                              <td><a ng-click="editmenu(menu, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
+                              <td><a ng-click="removemenu($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    
+                    <!-- sub-menu starts here -->
+                    <div class="col-md-7">
+                      <script type="text/ng-template" id="submenuContent.html">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Sub-menu Details</h3>
+                        </div>
+                        <div class="modal-body">
+
+                            <div class="form-group">
+                              <label for="main-menu-name">Main Menu Name</label>
+                              <input ng-disabled="true" ng-model="submenu.mainmenuname" type="text" class="form-control" id="main-menu-name" placeholder="" />
+                            </div>
+                            <div class="form-group">
+                              <label for="sub-menu-name">Sub Menu Name</label>
+                              <input ng-model="submenu.submenuname" type="text" class="form-control" id="sub-menu-name" placeholder="" />
+                            </div>                            
+                            <div class="form-group">
+                              <label for="sub-menu-label">Sub Menu Label</label>
+                              <input ng-model="submenu.submenulabel" type="text" class="form-control" id="sub-menu-label" placeholder="" />
+                            </div>
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" ng-click="ok()">OK</button>
+                            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                        </div>
+                      </script>
+
+                      <div class="table">
+                        <table class="table table-hover">
+                          <thead>
+                            <tr>
+                              <th>Sub Menus  <a ng-click="searchSubMenu()"><span class="badge">{{ selectedMenu.submenus.length }}</span></a></th>
+                              <th>Sub Menu Label</th>
+                              <th><a ng-click="newsubmenu()"><span class="glyphicon glyphicon-plus"></span></a></th>
+                              <th><a ng-click="removeallsubmenus()"><span class="glyphicon glyphicon-trash"></a></th>
+                            </tr>
+                            <tr ng-show="searchSubMenuFlag">
+                              <th colspan="4"><input class="form-control" ng-model="sm.submenuname" /></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr ng-repeat="submenu in selectedMenu.submenus | filter: sm.submenuname">
+                              <td>{{ submenu.submenuname }}</td>
+                              <td>{{ submenu.submenulabel }}</td>
+                              <td><a ng-click="editsubmenu(submenu, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
+                              <td><a ng-click="removesubmenu($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>                    
+                  </div>
+                </tab>
+                
+                <tab>
+                  <tab-heading>
                     Models
                   </tab-heading>
                   <div class="panel-body">
                     
-                    <div class="col-md-4">
+                    <div class="col-md-5">
 
                       <script type="text/ng-template" id="modelContent.html">
                         <div class="modal-header">
@@ -30,26 +140,92 @@
                             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
                         </div>
                       </script>
+                      
+                      <script type="text/ng-template" id="createController.html">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Create Controller</h3>
+                        </div>
+                        <div class="modal-body">
+                          <div class="form-group">
+                            <label for="model-name">Model Name</label>
+                            <input ng-model="model.name" type="text" class="form-control"  id="model-name" placeholder="Contact" />
+                          </div>
+                          <div class="form-group">
+                            <label for="method-type">Method</label>
+                            <select multiple id="method-type" class="form-control" size='7'
+                              ng-model="methods" 
+                              ng-required="true"
+                              ng-options="template for template in templates" />
+<!--                             <select multiple class="form-control" ng-model="method.methodtype" id="method-type">
+                              <option value="create">Create</option>
+                              <option value="edit">Edit</option>
+                              <option value="list">List</option>
+                              <option value="view">View</option>
+                              <option value="other">Other</option>
+                            </select> -->
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" ng-click="ok()">OK</button>
+                            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                        </div>
+                      </script>
+
+                      <script type="text/ng-template" id="createViews.html">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Create Views</h3>
+                        </div>
+                        <div class="modal-body">
+                          <div class="form-group">
+                            <label for="model-name">Model Name</label>
+                            <span>{{ model.name }}</span>
+                          </div>
+                          <div class="form-group">
+                            <label for="view-type">Views</label>
+                            <select multiple id="view-type" class="form-control" size='7'
+                              ng-model="output.views" 
+                              ng-required="true" 
+                              ng-options="template for template in templates" />
+                          </div>
+                          <div ng-show="output.views.indexOf('list') > -1" class="form-group">
+                            <label for="menu-name">Main Menu Name</label>
+                            <select id="menu-name" class="form-control" 
+                              ng-model="output.menuname" 
+                              ng-required="true" 
+                              ng-options="menu.menuname as menu.menuname for menu in menus">
+                              <option value="">No Menu</option>
+                            </select>
+                          </div>                          
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" ng-click="ok()">OK</button>
+                            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                        </div>
+                      </script>                      
 
                       <div class="table">
                         <table id="tblModel" class="table table-hover">
                           <thead>
                             <tr>
-                              <th>Model  <a ng-click="searchModel()"><span class="glyphicon glyphicon-search"></span></a></th>
+                              <th>Models  <a ng-click="searchModel()"><span class="badge">{{ project.models.length }}</span></a></th>
+                              <th></th>
+                              <th></th>
                               <th></th>
                               <th><a ng-click="newmodel()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="removeallmodels()"><span class="glyphicon glyphicon-remove"></span></a></th>
+                              <th><a ng-click="removeallmodels()"><span class="glyphicon glyphicon-trash"></span></a></th>
                             </tr>
-                            <tr ng-show="searchModelValue">
-                              <th colspan="4"><input class="form-control" ng-model="q.name" /></th>
+                            <tr ng-show="searchModelFlag">
+                              <th colspan="6"><input class="form-control" ng-model="q.name" /></th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr ng-click="selectModel(model, $index)" ng-repeat="model in project.models | filter: q.name">
                               <td>{{ model.name }}</td>
                               <td><span class="badge">{{ model.elements.length }}</span></td>
-                              <td><a ng-click="openmodel(model, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
-                              <td><a ng-click="deletemodel($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
+                              <td><a ng-click="createcontroller(model)"><span class="badge">C</span></a></td>
+                              <td><a ng-click="createviews(model)"><span class="badge">V</span></a></td>
+                              <td><a ng-click="editmodel(model, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
+                              <td><a ng-click="removemodel($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
                         </table>
@@ -57,7 +233,7 @@
                       
                     </div>
 
-                    <div class="col-md-8">
+                    <div class="col-md-7">
                       <!-- Single button -->
                         <!-- 
                         <div class="btn-group">
@@ -90,7 +266,7 @@
                                 <option value="String">String</option>
                                 <option value="Number">Number</option>
                                 <option value="Date">Date</option>
-                                <option value="Schema.Types.ObjectId">Schema.Object</option>
+                                <option value="Schema.Types.ObjectId">Schema.Types.ObjectId</option>
                               </select>
                             </div>
                             <div ng-show="element.elementtype=='Schema.Types.ObjectId'" class="form-group">
@@ -108,12 +284,12 @@
                         <table id="tblElement" class="table table-hover">
                           <thead>
                             <tr>
-                              <th>Element Name <a ng-click="searchElement()"><span class="glyphicon glyphicon-search"></span></a></th>
+                              <th>Elements <a ng-click="searchElement()"><span class="badge">{{ selectedModel.elements.length }}</span></a></th>
                               <th>Type</th>
                               <th><a ng-click="newelement()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="removeallelements()"><span class="glyphicon glyphicon-remove"></span></a></th>
+                              <th><a ng-click="removeallelements()"><span class="glyphicon glyphicon-trash"></span></a></th>
                             </tr>
-                            <tr ng-show="searchElementValue">
+                            <tr ng-show="searchElementFlag">
                               <th colspan="4"><input class="form-control" ng-model="e.elementname" /></th>
                             </tr>                            
                           </thead>
@@ -134,117 +310,223 @@
 
                 <tab>
                   <tab-heading>
-                    Menus
+                    Controllers
                   </tab-heading>
                   <div class="panel-body">
-                  
-                    <!-- menu starts here -->
-                    <div class="col-md-5">
-                      <script type="text/ng-template" id="menuContent.html">
+                    <!-- controller starts here -->
+                    <div class="col-md-4">
+                      <!-- controller popup starts here -->
+                      <script type="text/ng-template" id="controllerContent.html">
                         <div class="modal-header">
-                            <h3 class="modal-title">Menu Details</h3>
+                            <h3 class="modal-title">Controller Details</h3>
                         </div>
                         <div class="modal-body">
-
                           <div class="form-group">
-                            <label for="menu-name">Menu Name</label>
-                            <input ng-model="menu.menuname" type="text" class="form-control" id="menu-name" placeholder="" />
-                          </div>
-                        
+                            <label for="controller-name">Controller Name</label>
+                            <input ng-model="controller.controllername" type="text" class="form-control" id="controller-name" placeholder="" />
+                          </div>                        
                           <div class="form-group">
-                            <label for="menu-label">Menu Label</label>
-                            <input ng-model="menu.menulabel" type="text" class="form-control" id="menu-label" placeholder="" />
+                            <label for="model-name">Model Name</label>
+                            <select id="model-name" class="form-control" 
+                              ng-model="controller.modelparampluralname" 
+                              ng-required="true" 
+                              ng-options="model.parampluralname as model.name for model in controller.models" />
                           </div>
-                          
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-primary" ng-click="ok()">OK</button>
                             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
                         </div>
                       </script>
-                     
+                      <!-- controller popup ends here -->
+                      
+                      <!-- controller table starts here -->
                       <div class="table">
                         <table class="table table-hover">
                           <thead>
                             <tr>
-                              <th>Menu  <a ng-click="searchMenu()"><span class="glyphicon glyphicon-search"></span></a></th>
+                              <th>Controllers  <a ng-click="searchController()"><span class="badge">{{ project.controllers.length }}</span></a></th>
                               <th></th>
-                              <th><a ng-click="newmenu()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="removeallmenus()"><span class="glyphicon glyphicon-remove"></span></a></th>
+                              <th><a ng-click="newcontroller()"><span class="glyphicon glyphicon-plus"></span></a></th>
+                              <th><a ng-click="removeallcontrollers()"><span class="glyphicon glyphicon-trash"></span></a></th>
                             </tr>
-                            <tr ng-show="searchMenuValue">
-                              <th colspan="4"><input class="form-control" ng-model="m.menuname" /></th>
+                            <tr ng-show="searchControllerFlag">
+                              <th colspan="4"><input class="form-control" ng-model="ct.controllername" /></th>
                             </tr>
                           </thead>
                           <tbody>
-                            <tr ng-click="selectmenu($index)" ng-repeat="menu in project.menus | filter: m.menuname">
-                              <td>{{ menu.menulabel }}</td>
-                              <td><span class="badge">{{ menu.submenus.length }}</span></td>
-                              <td><a ng-click="editmenu(menu, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
-                              <td><a ng-click="removemenu($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
+                            <tr ng-click="selectController(controller, $index)" ng-repeat="controller in project.controllers | filter: ct.controllername">
+                              <td>{{ controller.controllername }}</td>
+                              <td><span class="badge">{{ controller.methods.length }}</span></td>
+                              <td><a ng-click="editcontroller(controller, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
+                              <td><a ng-click="removecontroller($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <!-- controller table ends here -->                      
+                    </div>
+                    <!-- service starts -->
+                    <div class="col-md-3">
+                      <script type="text/ng-template" id="serviceContent.html">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Service Details</h3>
+                        </div>
+                        <div class="modal-body">
+                          <div class="form-group">
+                            <label for="service-name">Service Name</label>
+                            <select id="service-name" class="form-control" 
+                              ng-model="service.servicename" 
+                              ng-required="true" 
+                              ng-options="model.pluralname as model.name for model in service.models | filter:'!{{ service.modelname }}':true" />
+                            
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" ng-click="ok()">OK</button>
+                            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                        </div>
+                      </script>
+                      
+                      <div class="table">
+                        <table class="table table-hover">
+                          <thead>
+                            <tr>
+                              <th>Services</th>
+                              <th><a ng-click="newservice()"><span class="glyphicon glyphicon-plus"></span></a></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr ng-repeat="service in selectedController.services track by $index">
+                              <td>{{ service }}</td>
+                              <td><a ng-click="removeservice($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
                         </table>
                       </div>
                     </div>
+                    <!-- service ends -->
                     
-                    <!-- sub-menu starts here -->
-                    <div class="col-md-7">
-                      <span>{{ selectedmenu.name }}</span>
-                      
-                      <script type="text/ng-template" id="submenuContent.html">
+                    <!-- lookup starts -->
+                    <div class="col-md-3">
+                      <script type="text/ng-template" id="lookupContent.html">
                         <div class="modal-header">
-                            <h3 class="modal-title">Sub-menu Details</h3>
+                            <h3 class="modal-title">Lookup Details</h3>
                         </div>
                         <div class="modal-body">
-
-                            <div class="form-group">
-                              <label for="main-menu-name">Main Menu Name</label>
-                              <input ng-disabled="true" ng-model="submenu.mainmenuname" type="text" class="form-control" id="main-menu-name" placeholder="" />
+                          <div class="row">
+                            <div class="col-md-3 form-group">
+                              <label for="lookup-name">Lookup Name</label>
+                              <input ng-model="lookup.lookupname" type="text" class="form-control" id="lookup-name" placeholder="" />
                             </div>
-                            <div class="form-group">
-                              <label for="sub-menu-name">Sub Menu Name</label>
-                              <input ng-model="submenu.submenuname" type="text" class="form-control" id="sub-menu-name" placeholder="" />
-                            </div>                            
-                            <div class="form-group">
-                              <label for="sub-menu-label">Sub Menu Label</label>
-                              <input ng-model="submenu.submenulabel" type="text" class="form-control" id="sub-menu-label" placeholder="" />
+                            <div class="col-md-9 form-group">
+                              <label for="lookup-expression">Expression</label>
+                              <input ng-model="lookup.expression" type="text" class="form-control" id="lookup-expression" placeholder="" />
                             </div>
-                            
+                          </div>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-primary" ng-click="ok()">OK</button>
                             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
                         </div>
                       </script>
-
+                      
                       <div class="table">
                         <table class="table table-hover">
                           <thead>
                             <tr>
-                              <th>Sub Menu Name  <a ng-click="searchSubMenu()"><span class="glyphicon glyphicon-search"></span></a></th>
-                              <th>Sub Menu Label</th>
-                              <th><a ng-click="newsubmenu()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="removeallsubmenus()"><span class="glyphicon glyphicon-remove"></a></th>
+                              <th>Lookups  <a ng-click="searchLookup()"><span class="badge">{{ selectedController.lookups.length }}</span></a></th>
+                              <th><a ng-click="newlookup()"><span class="glyphicon glyphicon-plus"></span></a></th>
+                              <th><a ng-click="removealllookups()"><span class="glyphicon glyphicon-trash"></span></a></th>
                             </tr>
-                            <tr ng-show="searchSubMenuValue">
-                              <th colspan="4"><input class="form-control" ng-model="sm.submenuname" /></th>
-                            </tr>
+                            <tr ng-show="searchLookupFlag">
+                              <th colspan="4"><input class="form-control" ng-model="l.lookupname" /></th>
+                            </tr>                            
                           </thead>
                           <tbody>
-                            <tr ng-repeat="submenu in selectedmenu.submenus | filter: sm.submenuname">
-                              <td>{{ submenu.submenuname }}</td>
-                              <td>{{ submenu.submenulabel }}</td>
-                              <td><a ng-click="editsubmenu(submenu, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
-                              <td><a ng-click="removesubmenu($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
+                            <tr ng-repeat="lookup in selectedController.lookups | filter: l.lookupname">
+                              <td>{{ lookup.lookupname }}</td>
+                              <td><a ng-click="editlookup(lookup, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
+                              <td><a ng-click="removelookup($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
                         </table>
                       </div>
-                    </div>                    
+                    </div>
+                    <!-- lookup ends -->                    
                     
+                    <!-- method starts here -->
+                    <div class="col-md-2">
+                      <!-- method popup starts here -->
+                      <script type="text/ng-template" id="methodContent.html">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Method Details</h3>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row">
+                            <div class="col-md-3">
+                              <div class="form-group">
+                                <label for="method-name">Methods</label>
+                                <input ng-model="method.methodname" type="text" class="form-control" id="method-name" placeholder="" />
+                              </div>
+                            </div>
+                            <div class="col-md-3">
+                              <div class="form-group">
+                                <label for="method-type">Method Type</label>
+                                <select class="form-control" ng-model="method.methodtype" id="method-type">
+                                  <option value="create">create</option>
+                                  <option value="remove">remove</option>
+                                  <option value="update">update</option>
+                                  <option value="find">find</option>
+                                  <option value="findOne">findOne</option>
+                                  <option value="other">Other</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                          <div ng-show="method.methodtype=='other'" class="row">
+                            <div class="col-md-12">
+                              <div class="form-group">
+                                <label for="method-content">Method Content</label>
+                                <textarea ng-model="method.methodcontent" class="form-control" rows="15" id="method-content" placeholder="" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" ng-click="ok()">OK</button>
+                            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                        </div>
+                      </script>
+                      <!-- method popup ends here -->
+                      
+                      <!-- method table starts here -->
+                      <div class="table">
+                        <table class="table table-hover">
+                          <thead>
+                            <tr>
+                              <th>Methods  <a ng-click="searchMethod()"><span class="badge">{{ selectedController.methods.length }}</span></a></th>
+                              <th><a ng-click="newmethod()"><span class="glyphicon glyphicon-plus"></span></a></th>
+                              <th><a ng-click="removeallmethods()"><span class="glyphicon glyphicon-trash"></span></a></th>
+                            </tr>
+                            <tr ng-show="searchMethodFlag">
+                              <th colspan="4"><input class="form-control" ng-model="md.methodname" /></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr ng-repeat="method in selectedController.methods | filter: md.methodname">
+                              <td>{{ method.methodname }}</td>
+                              <td><a ng-click="editmethod(method, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
+                              <td><a ng-click="removemethod($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <!-- method table ends here -->                      
+                    </div>                    
+                    <!-- method ends here -->
                   </div>
-                  
+                  <!-- tab panel body div close-->
                 </tab>
                 
                 <tab>
@@ -303,12 +585,12 @@
                         <table class="table table-hover">
                           <thead>
                             <tr>
-                              <th>View  <a ng-click="searchView()"><span class="glyphicon glyphicon-search"></span></a></th>
+                              <th>Views  <a ng-click="searchView()"><span class="badge">{{ project.views.length }}</span></a></th>
                               <th></th>
                               <th><a ng-click="newview()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="deleteallviews()"><span class="glyphicon glyphicon-trash"></span></a></th>
+                              <th><a ng-click="removeallviews()"><span class="glyphicon glyphicon-trash"></span></a></th>
                             </tr>
-                            <tr ng-show="searchViewValue">
+                            <tr ng-show="searchViewFlag">
                               <th colspan="4"><input class="form-control" ng-model="v.viewname" /></th>
                             </tr>
                           </thead>
@@ -316,8 +598,8 @@
                             <tr ng-click="selectView(view, $index)" ng-repeat="view in project.views | filter: v.viewname">
                               <td>{{ view.viewname }}</td>
                               <td><span class="badge">{{ view.controls.length }}</span></td>
-                              <td><a ng-click="openview(view, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
-                              <td><a ng-click="deleteview($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
+                              <td><a ng-click="editview(view, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
+                              <td><a ng-click="removeview($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
                         </table>
@@ -337,39 +619,44 @@
                               <label for="control-name">Control Name</label>
                               <input ng-model="control.controlname" type="text" class="form-control" id="control-name" placeholder="Name" />
                             </div>
-                            <div class="col-md-2 form-group">
+                            <div class="col-md-3 form-group">
                               <label for="control-type">Control Type</label>
                               <select class="form-control" ng-model="control.controltype">
                                 <option value="Text">Text</option>
                                 <option value="Number">Number</option>
-                                <option value="Lookup">Lookup</option>
+                                <option value="Schema.Types.ObjectId">Schema.Type</option>
                                 <option value="Date">Date</option>
                               </select>
                             </div>
-                            <div class="col-md-2 form-group">
-                              <label for="control-width">Width</label>
-                              <input ng-model="control.width" type="number" class="form-control" id="control-width" placeholder="2" />
-                            </div>
-                            <div class="col-md-4 form-group">
-                              <label for="model-element">Model Element</label>
-                              <input ng-model="control.modelelement" type="text" class="form-control" id="model-element" placeholder="" />
-                            </div>
+                            <div class="col-md-5 form-group">
+                              <label for="control-label">Control Label</label>
+                              <input ng-model="control.controllabel" type="text" class="form-control" id="control-label" placeholder="Display Name" />
+                            </div>                            
                           </div>
                           <div class="row">
                             <div class="col-md-3 form-group">
-                              <label for="control-label">Control Label</label>
-                              <input ng-model="control.controllabel" type="text" class="form-control" id="control-label" placeholder="Display Name" />
-                            </div>
-                            <div class="col-md-3 form-group">
-                              <label for="example-text">Sample text</label>
-                              <input ng-model="control.exampletext" type="text" class="form-control" id="example-text" placeholder="" />
-                            </div>
-                            <div ng-show="control.controltype=='Lookup'" class="col-md-6 form-group">
+                              <label for="model-element">Model Element</label>
+                              <input ng-model="control.modelelement" type="text" class="form-control" id="model-element" placeholder="" />
+                            </div>                          
+                            <div class="col-md-2 form-group">
+                              <label for="control-width">Width</label>
+                              <input ng-model="control.width" type="number" class="form-control" id="control-width" placeholder="2" />
+                            </div>                          
+                            <div ng-show="control.controltype=='Schema.Types.ObjectId'" class="col-md-7 form-group">
                               <label for="options">options</label>
                               <input ng-model="control.options" type="text" class="form-control" id="options" 
                               placeholder="element.id as element.label for element in collection" />
                             </div>
-                 
+                            <div ng-show="view.viewtype=='edit' && control.controltype!='Schema.Types.ObjectId'" class="col-md-2 form-group">
+                              <label for="read-only">Is Read Only</label> 
+                              <input ng-model="control.isreadonly" type="checkbox" class="form-control" id="read-only" /> 
+                            </div>                 
+                          </div>
+                          <div class="row">
+                            <div class="col-md-12 form-group">
+                              <label for="example-text">Sample text</label>
+                              <input ng-model="control.exampletext" type="text" class="form-control" id="example-text" placeholder="" />
+                            </div>
                           </div>
                         </div>
                         <div class="modal-footer">
@@ -401,13 +688,18 @@
                         <table class="table table-hover">
                           <thead>
                             <tr>
-                              <th>Control Name  <a ng-click="searchControl()"><span class="glyphicon glyphicon-search"></span></a></th>
-                              <th>Label <a ng-click="copycontrols()"><span class="glyphicon glyphicon-import"></span></a></th>
+                              <th>Controls  <a ng-click="searchControl()"><span class="badge">{{ selectedView.controls.length }}</span></a></th>
+                              <th>Label 
+                              <a ng-click="copycontrols()"><span class="glyphicon glyphicon-import"></span></a>
+                              <a ng-csv="exportControls()" filename="controls.csv"><span class="glyphicon glyphicon-export"></span></a>
+                              </th>
                               <th><a ng-click="newcontrol()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="removeallcontrols()"><span class="glyphicon glyphicon-remove"></span></a></th>
+                              <th>
+                              <a ng-click="removeallcontrols()"><span class="glyphicon glyphicon-trash"></span></a>
+                              </th>
                             </tr>
-                            <tr ng-show="searchControlValue">
-                              <th colspan="5"><input class="form-control" ng-model="c.controlname" /></th>
+                            <tr ng-show="searchControlFlag">
+                              <th colspan="4"><input class="form-control" ng-model="c.controlname" /></th>
                             </tr>                            
                           </thead>
                           <tbody>
@@ -429,178 +721,42 @@
                 </tab>
                 <tab>
                   <tab-heading>
-                    Controllers
-                  </tab-heading>
-                  <div class="panel-body">
-                    <!-- controller starts here -->
-                    <div class="col-md-4">
-                      <!-- controller popup starts here -->
-                      <script type="text/ng-template" id="controllerContent.html">
-                        <div class="modal-header">
-                            <h3 class="modal-title">Controller Details</h3>
-                        </div>
-                        <div class="modal-body">
-                          <div class="form-group">
-                            <label for="controller-name">Controller Name</label>
-                            <input ng-model="controller.controllername" type="text" class="form-control" id="controller-name" placeholder="" />
-                          </div>                        
-                          <div class="form-group">
-                            <label for="model-name">Model Name</label>
-                            <select id="model-name" class="form-control" 
-                              ng-model="controller.modelname" 
-                              ng-required="true" 
-                              ng-options="model.name as model.name for model in controller.models" />
-                          </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-primary" ng-click="ok()">OK</button>
-                            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
-                        </div>
-                      </script>
-                      <!-- controller popup ends here -->
-                      
-                      <!-- controller table starts here -->
-                      <div class="table">
-                        <table class="table table-hover">
-                          <thead>
-                            <tr>
-                              <th>Controller  <a ng-click="searchController()"><span class="glyphicon glyphicon-search"></span></a></th>
-                              <th></th>
-                              <th><a ng-click="newcontroller()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="deleteallcontrollers()"><span class="glyphicon glyphicon-trash"></span></a></th>
-                            </tr>
-                            <tr ng-show="searchControllerValue">
-                              <th colspan="4"><input class="form-control" ng-model="ct.controllername" /></th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr ng-click="selectController(controller, $index)" ng-repeat="controller in project.controllers | filter: ct.controllername">
-                              <td>{{ controller.controllername }}</td>
-                              <td><span class="badge">{{ controller.methods.length }}</span></td>
-                              <td><a ng-click="opencontroller(controller, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
-                              <td><a ng-click="deletecontroller($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <!-- controller table ends here -->                      
-                    </div>
-                    <!-- service starts -->
-                    <div class="col-md-3">
-                      <script type="text/ng-template" id="serviceContent.html">
-                        <div class="modal-header">
-                            <h3 class="modal-title">Service Details</h3>
-                        </div>
-                        <div class="modal-body">
-                          <div class="form-group">
-                            <label for="service-name">Service Name</label>
-                            <select id="service-name" class="form-control" 
-                              ng-model="service.servicename" 
-                              ng-required="true" 
-                              ng-options="model.name as model.name for model in service.models | filter:'!{{ service.modelname }}':true" />
-                            
-                          </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-primary" ng-click="ok()">OK</button>
-                            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
-                        </div>
-                      </script>
-                      
-                      <div class="table">
-                        <table class="table table-hover">
-                          <thead>
-                            <tr>
-                              <th>Service Name  <a ng-click="searchServices()"><span class="glyphicon glyphicon-search"></span></a></th>
-                              <th><a ng-click="newservice()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="removeallservices()"><span class="glyphicon glyphicon-remove"></span></a></th>
-                            </tr>
-                            <tr ng-show="searchServicesflag">
-                              <th colspan="3"><input class="form-control" ng-model="sc.servicename" /></th>
-                            </tr>                            
-                          </thead>
-                          <tbody>
-                            <tr ng-repeat="service in selectedController.services | filter: sc.servicename">
-                              <td>{{ service.servicename }}</td>
-                              <td><a ng-click="editservice(service, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
-                              <td><a ng-click="removeservice($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <!-- service ends -->
-                    
-                    <!-- lookup starts -->
-                    <div class="col-md-5">
-                      <script type="text/ng-template" id="lookupContent.html">
-                        <div class="modal-header">
-                            <h3 class="modal-title">Lookup Details</h3>
-                        </div>
-                        <div class="modal-body">
-                          <div class="row">
-                            <div class="col-md-3 form-group">
-                              <label for="lookup-name">Lookup Name</label>
-                              <input ng-model="lookup.lookupname" type="text" class="form-control" id="lookup-name" placeholder="" />
-                            </div>
-                            <div class="col-md-9 form-group">
-                              <label for="lookup-expression">Expression</label>
-                              <input ng-model="lookup.expression" type="text" class="form-control" id="lookup-expression" placeholder="" />
-                            </div>
-                          </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-primary" ng-click="ok()">OK</button>
-                            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
-                        </div>
-                      </script>
-                      
-                      <div class="table">
-                        <table class="table table-hover">
-                          <thead>
-                            <tr>
-                              <th>Lookup Name  <a ng-click="searchLookup()"><span class="glyphicon glyphicon-search"></span></a></th>
-                              <th>Expression</th>
-                              <th><a ng-click="newlookup()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="removealllookups()"><span class="glyphicon glyphicon-remove"></span></a></th>
-                            </tr>
-                            <tr ng-show="searchLookupValue">
-                              <th colspan="4"><input class="form-control" ng-model="l.lookupname" /></th>
-                            </tr>                            
-                          </thead>
-                          <tbody>
-                            <tr ng-repeat="lookup in selectedController.lookups | filter: l.lookupname">
-                              <td>{{ lookup.lookupname }}</td>
-                              <td>{{ lookup.expression }}</td>
-                              <td><a ng-click="editlookup(lookup, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
-                              <td><a ng-click="removelookup($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <!-- lookup ends -->                    
-                    
-                  </div>
-                  <!-- tab panel body div close-->
-                </tab>
-                <tab>
-                  <tab-heading>
                     Project
                   </tab-heading>
                   <div class="panel-body">
                     <div class="form-group col-md-3 no-print">
                       <input type="text" ng-model='project.name' class="form-control" id="project-name" placeholder="Project Name" required />
                     </div> 
-                    <span class="print-only">{{ project.name }}</span>
+                    <span class="print-only" >{{ project.name }}</span>
                     <div class="col-md-3 form-group no-print">
                       <input type="file" on-read-file="displayFileContents(contents)" />
                     </div>
                     <div class="col-md-3 form-group no-print">
-                      <button class="btn btn-primary" ng-click="saveJSON()" ng-href="{{ url }}">Export</button>
+                      <button class="btn btn-primary" ng-click="saveJSON()" ng-href="{{ url }}" >Export</button>
+                      <button class="btn btn-primary" ng-click="resetProject()" ><span class="glyphicon glyphicon-trash"></span></button>
                     </div>
                     <pre class="col-md-12">{{ project | json}}</pre>
                   </div>
+                </tab>
+                <tab>
+                  <tab-heading>
+                    About
+                  </tab-heading>
+                  <div class="container-fluid">
+                    <div ng-controller="AboutCtrl">
+                      <div class="jumbotron">
+                        <h2>Welcome {{time | date}}!</h2>
+                        <p class="lead">
+                          <img src="images/seeki.png" alt="seeki"><br>
+                          Best place to start developing your applications.
+                        </p>
+                        <p><a class="btn btn-lg btn-success" ng-href="#/">Start now <span class="glyphicon glyphicon-ok"></span></a></p>
+                      </div>
+                      <ul ng-repeat="author in authors">
+                        <li>{{author}}</li>
+                      </ul>
+                    </div>
+                  </div>                  
                 </tab>
               </tabset>
             </div>

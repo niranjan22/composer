@@ -10,7 +10,7 @@
  */
 angular
   .module('composerApp', [
-    'ngRoute', 'ui.bootstrap', 'change-case'
+    'ngRoute', 'ui.bootstrap', 'change-case', 'ngSanitize', 'ngCsv'
   ])
   .config(function ($routeProvider) {
     $routeProvider
