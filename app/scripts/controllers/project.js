@@ -7,38 +7,78 @@
  * # ProjectCtrl
  * Controller of the composerApp
  */
-angular.module('composerApp')
-  .controller('ProjectCtrl', function ($scope, $modal, $log, changeCase) {
+angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal, $log, changeCase, toaster) {
+    this.authors = [
+      'Raja',
+      'Sekar',
+      'Gladwin'
+    ];
+    $scope.authors = this.authors;
+    $scope.time = Date.now();
+    
     var taxes = [
             { amount: 25, currencyCode: "USD", decimalPlaces: 1, taxCode: "YRI"},
             { amount: 25, currencyCode: "USD", decimalPlaces: 2, taxCode: "YRI"},
             { amount: 10, currencyCode: "USD", decimalPlaces: 3, taxCode: "YRI"}
         ];
-        
+
     var totalTaxes = taxes.reduce(function (sum, tax) {
         return sum + tax.decimalPlaces + tax.amount;
     }, 0);
     console.log('taxes.reduce', totalTaxes);
-    
+    /*toaster.options = {
+      "closeButton": true,
+      "debug": false,
+      "progressBar": true,
+      "positionClass": "toast-top-full-width",
+      "showDuration": "400",
+      "hideDuration": "1000",
+      "timeOut": "7000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+    };*/
+
     $scope.project = {name: 'Project1', menus: [], models: [], controllers: [], views: []};
     $scope.selectedMenu = null;
+    $scope.selectedMenuIndex = null;
+    $scope.selectedSubMenu = null;
+    $scope.selectedSubMenuIndex = null;    
     $scope.selectedModel = null;
     $scope.selectedModelIndex = null;
+    $scope.selectedElement = null;
+    $scope.selectedElementIndex = null;    
     $scope.selectedControllerIndex = null;
     $scope.selectedController = null;
+    $scope.selectedService = null;
+    $scope.selectedServiceIndex = null;
+    $scope.selectedLookup = null;
+    $scope.selectedLookupIndex = null;
+    $scope.selectedMethod = null;
+    $scope.selectedMethodIndex = null;
     $scope.selectedView = null;
     $scope.selectedViewIndex = null;
-    
+    $scope.selectedSection = null;
+    $scope.selectedSectionIndex = null;
+    $scope.selectedControl = null;
+    $scope.selectedControlIndex = null;    
+    //$scope.alerts = [];
     
     $scope.searchMenuFlag = false;
     $scope.searchSubMenuFlag = false;
     $scope.searchModelFlag = false;
     $scope.searchElementFlag = false;
+    $scope.searchNestedElementFlag = false;
     $scope.searchControllerFlag = false;
+    $scope.searchServiceFlag = false;
     $scope.searchLookupFlag = false;
     $scope.searchMethodFlag = false;
     $scope.searchViewFlag = false;
+    $scope.searchSectionFlag = false;
     $scope.searchControlFlag = false;
+    $scope.searchNestedControlFlag = false;  
     
     //menu related functions start
     $scope.searchMenu = function () {
@@ -66,14 +106,19 @@ angular.module('composerApp')
         menu.menulabel = changeCase.titleCase(menu.menulabel);
         $scope.project.menus.push(menu);
         $scope.selectedMenu = menu;
+        $scope.selectedMenu = menu;
+        $scope.selectedMenuIndex = $scope.project.menus.length-1;        
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
       });
     };
     
-    $scope.selectMenu = function (index) {
-      $scope.selectedMenu = $scope.project.menus[index];
-    };    
+    $scope.selectMenu = function (menu, index) {
+      $scope.selectedMenu = menu;
+      $scope.selectedMenuIndex = index;
+      $scope.selectedSubMenu = null;
+      $scope.selectedSubMenuIndex = null;
+    };
     
     $scope.editmenu = function (data, index) {
       var modalInstance = $modal.open({
@@ -101,13 +146,23 @@ angular.module('composerApp')
     };
 
     $scope.removemenu = function (index) {
+      //$scope.alerts = [{type: 'danger', msg: $scope.project.menus[index].menulabel + ' deleted'}];
+      toaster.pop('error', "Menu", $scope.project.menus[index].menulabel + ', deleted');
       $scope.project.menus.splice(index, 1);
-      $scope.selectmenu(0);
+      if($scope.project.menus.length > 0){
+        $scope.selectedMenuIndex = index;
+        $scope.selectedMenu = $scope.project.menus[index];
+      }else{
+        $scope.selectedMenuIndex = null;
+        $scope.selectedMenu = null;
+      }      
     };
     
     $scope.removeallmenus = function () {
+      toaster.pop('error', "Menu", 'All items, deleted');
       $scope.project.menus.splice(0);
-      $scope.selectmenu(0);
+      $scope.selectedMenu = null;
+      $scope.selectedMenuIndex = null;
     };
     //menu related functions end    
     
@@ -124,10 +179,12 @@ angular.module('composerApp')
         size: 'sm',
         resolve: {
           submenu: function () {
-            var m = {mainmenuname: $scope.selectedMenu.menuname, 
-                      submenuname: '',
-                      submenulabel: ''};
-            return m;
+            if($scope.selectedMenu){
+              var m = {mainmenuname: $scope.selectedMenu.menuname, 
+                        submenuname: '',
+                        submenulabel: ''};
+              return m;
+            }
           }
         }
       });
@@ -136,10 +193,17 @@ angular.module('composerApp')
         submenu.submenuname = changeCase.paramCase(pluralize(submenu.submenuname));
         submenu.submenulabel = changeCase.titleCase(submenu.submenulabel);        
         $scope.selectedMenu.submenus.push(submenu);
+        $scope.selectedSubMenu = submenu;
+        $scope.selectedSubMenuIndex = $scope.selectedMenu.submenus.length-1;                
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
       });
      
+    };
+    
+    $scope.selectSubMenu = function (submenu, index) {
+      $scope.selectedSubMenu = submenu;
+      $scope.selectedSubMenuIndex = index;
     };
     
     $scope.editsubmenu = function (data, index) {
@@ -168,11 +232,15 @@ angular.module('composerApp')
     };
     
     $scope.removesubmenu = function (index) {
+      toaster.pop('error', "Sub Menu", $scope.selectedMenu.submenus[index].submenulabel + ', deleted');
       $scope.selectedMenu.submenus.splice(index, 1);
     };
     
     $scope.removeallsubmenus = function () {
-      $scope.selectedMenu.submenus.splice(0);
+      if ($scope.selectedMenu) {
+        toaster.pop('error', "Sub Menu", 'All items, deleted');
+        $scope.selectedMenu.submenus.splice(0);
+      }
     };
     //sub-menu related functions end  
     
@@ -204,6 +272,7 @@ angular.module('composerApp')
                       elements: []};
         $scope.project.models.push(model);
         $scope.selectedModel = model;
+        $scope.selectedModelIndex = $scope.project.models.length-1;           
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
       });
@@ -212,12 +281,13 @@ angular.module('composerApp')
     $scope.selectModel = function (data, index) {
       $scope.selectedModelIndex = index;
       $scope.selectedModel = data;
+      $scope.selectedElement = null;
+      $scope.selectedElementIndex = null;
     };    
 
-    $scope.editmodel = function (model, index) {
+    $scope.editmodel = function (data, index) {
       $scope.selectedModelIndex = index;
-      $scope.selectedModel = model;
-      var data = model;
+      $scope.selectedModel = data;
       var modalInstance = $modal.open({
         animation: false,
         templateUrl: 'modelContent.html',
@@ -249,18 +319,28 @@ angular.module('composerApp')
     };
     
     $scope.removemodel = function (index) {
+      toaster.pop('error', "Model", $scope.project.models[index].name + ', deleted');
       $scope.project.models.splice(index, 1);
-      if($scope.project.models.length > 1){
-        $scope.selectedModelIndex = index -1;
+      if($scope.project.models.length > 0){
+        $scope.selectedElement = null;
+        $scope.selectedElementIndex = null;          
+        $scope.selectedModelIndex = index;
         $scope.selectedModel = $scope.project.models[index];
       }else{
         $scope.selectedModelIndex = null;
         $scope.selectedModel = null;
+        $scope.selectedElement = null;
+        $scope.selectedElementIndex = null;          
       }
     };
     
     $scope.removeallmodels = function () {
+      toaster.pop('error', "Model", 'All items, deleted');
       $scope.project.models.splice(0);
+      $scope.selectedModel = null;
+      $scope.selectedModelIndex = null;
+      $scope.selectedElement = null;
+      $scope.selectedElementIndex = null;        
     };
 
     $scope.createcontroller = function (data) {
@@ -350,7 +430,9 @@ angular.module('composerApp')
                     modelparampluralname: changeCase.paramCase(pluralize(data.name)),
                     modelcamelcasename: changeCase.camelCase(data.name),
                     menuname: output.menuname,
-                    controls: []};
+                    sections: [{controllername: data.pluralname + 'Controller',
+                                sectionsize: 12,
+                                controls: []}]};
           
           for(var i = 0; i < data.elements.length; i++) {
             var e = data.elements[i];
@@ -366,8 +448,28 @@ angular.module('composerApp')
                       modelelement: e.elementname,
                       controllabel: changeCase.titleCase(e.elementname),
                       exampletext : '',
-                      options: ''};   
-              v.controls.push(c);            
+                      options     : '',
+                      nestedcontrols: []};
+            if(e.elementtype ==='Nested'){
+              for (var ni = 0; ni < e.elements.length; ni++){
+                var ne = e.elements[ni];
+                var net = '';
+                if(ne.elementtype === 'String'){
+                  net = 'Text';
+                }else{
+                  net = ne.elementtype;
+                }              
+                var nc = { controlname: ne.elementname,
+                          controltype : net,
+                          width       : 3,
+                          modelelement: ne.elementname,
+                          controllabel: changeCase.titleCase(ne.elementname),
+                          exampletext : '',
+                          options     : ''};
+                c.nestedcontrols.push(nc);
+              }
+            }
+            v.sections[0].controls.push(c);
           }
           if(item === 'list'){
             for (var mc = 0; mc < $scope.project.menus.length; mc++) {
@@ -409,24 +511,33 @@ angular.module('composerApp')
         size: 'sm',
         resolve: {
           element: function () {
-            var e = {elementname: '', 
-                      elementtype: '',
-                      schemaobjref: '',
-                      modelname: $scope.selectedModel.name, 
-                      models: $scope.project.models};
+            var e = {elementname: '', elementtype:'', isarray: false, elements: []};
             return e;
+          },
+          modelname: function () {
+            if($scope.selectedModel){
+              return $scope.selectedModel.name;
+            }
+          },
+          models: function () {
+            return $scope.project.models;
           }
         }
       });
 
       modalInstance.result.then(function (element) {
-        var e = {elementname: changeCase.camelCase(element.elementname.replace(/ /g, '')), 
-                elementtype: element.elementtype,
-                schemaobjref: element.schemaobjref};
-        $scope.selectedModel.elements.push(e);
+        element.elementname = changeCase.camelCase(element.elementname.replace(/ /g, ''));
+        $scope.selectedModel.elements.push(element);
+        $scope.selectedElement = element;
+        $scope.selectedElementIndex = $scope.selectedModel.elements.length-1;            
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
       });
+    };
+    
+    $scope.selectElement = function (element, index) {
+      $scope.selectedElement = element;
+      $scope.selectedElementIndex = index;
     };
     
     $scope.editelement = function (data, index) {
@@ -440,31 +551,121 @@ angular.module('composerApp')
             var e = {elementname: data.elementname, 
                       elementtype: data.elementtype,
                       schemaobjref: data.schemaobjref,
-                      modelname: $scope.selectedModel.name,
-                      models: $scope.project.models};
+                      isarray: data.isarray,
+                      elements: data.elements};
             return e;
+          },
+          modelname: function () {
+            return $scope.selectedModel.name;
+          },
+          models: function () {
+            return $scope.project.models;
           }
         }
       });
 
       modalInstance.result.then(function (element) {
-        var e = {elementname: changeCase.camelCase(element.elementname.replace(/ /g, '')), 
-                elementtype: element.elementtype,
-                schemaobjref: element.schemaobjref};
-        $scope.selectedModel.elements[index] = e;
+        element.elementname = changeCase.camelCase(element.elementname.replace(/ /g, ''));
+        $scope.selectedModel.elements[index] = element;
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
       });
     };
     
     $scope.removeelement = function (index) {
+      toaster.pop('error', "Element", $scope.selectedModel.elements[index].elementname + ', deleted');
       $scope.selectedModel.elements.splice(index, 1);
     };
     
     $scope.removeallelements = function () {
-      $scope.selectedModel.elements.splice(0);
+      if ($scope.selectedModel) {
+        toaster.pop('error', "Element", 'All items, deleted');
+        $scope.selectedModel.elements.splice(0);
+      }
     };
     //element related functions end
+    
+    //nested element related functions start
+    $scope.searchNestedElement = function () {
+      $scope.searchNestedElementFlag =  !$scope.searchNestedElementFlag;
+    };
+    
+    $scope.newnestedelement = function () {
+      var modalInstance = $modal.open({
+        animation: false,
+        templateUrl: 'nestedelementContent.html',
+        controller: 'NestedElementInstanceCtrl',
+        size: 'sm',
+        resolve: {
+          nestedelement: function () {
+            var e = {elementname: ''};
+            return e;
+          },
+          modelname: function () {
+            return $scope.selectedModel.name;
+          },
+          models: function () {
+            return $scope.project.models;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (nestedelement) {
+        nestedelement.elementname = changeCase.camelCase(nestedelement.elementname.replace(/ /g, ''));
+        $scope.selectedElement.elements.push(nestedelement);
+        $scope.selectedNestedElement = nestedelement;
+        $scope.selectedNestedElementIndex = $scope.selectedElement.elements.length-1;           
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });
+    };
+    
+    $scope.selectNestedElement = function (nestedelement, index) {
+      $scope.selectedNestedElement = nestedelement;
+      $scope.selectedNestedElementIndex = index;
+    };
+    
+    $scope.editnestedelement = function (data, index) {
+      var modalInstance = $modal.open({
+        animation: false,
+        templateUrl: 'nestedelementContent.html',
+        controller: 'NestedElementInstanceCtrl',
+        size: 'sm',
+        resolve: {
+          nestedelement: function () {
+            var e = {elementname: data.elementname, 
+                      elementtype: data.elementtype,
+                      schemaobjref: data.schemaobjref,
+                      isarray: data.isarray};
+            return e;
+          },
+          modelname: function () {
+            return $scope.selectedModel.name;
+          },
+          models: function () {
+            return $scope.project.models;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (nestedelement) {
+        nestedelement.elementname = changeCase.camelCase(nestedelement.elementname.replace(/ /g, ''));
+        $scope.selectedElement.elements[index] = nestedelement;
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });
+    };
+    
+    $scope.removenestedelement = function (index) {
+      toaster.pop('error', "Nested Element", $scope.selectedElement.elements[index].elementname + ', deleted');
+      $scope.selectedElement.elements.splice(index, 1);
+    };
+    
+    $scope.removeallnestedelements = function () {
+      toaster.pop('error', "Nested Element", 'All items, deleted');
+      $scope.selectedElement.elements.splice(0);
+    };
+    //nested element related functions end
     
     //controller related functions starts here
     $scope.searchController = function () {
@@ -480,21 +681,24 @@ angular.module('composerApp')
         resolve: {
           controller: function () {
             var controller = {controllername: '', 
-                              modelparampluralname: '',
-                              models: $scope.project.models};    
+                              modelparampluralname: ''};    
             return controller;
-          }          
+          },                    
+          models: function () {
+            return $scope.project.models;
+          }
         }
       });
 
       modalInstance.result.then(function (data) {
         var ct = {controllername: data.controllername,
                   modelparampluralname: data.modelparampluralname,
+                  methods: [],
                   services: [],
-                  lookups: [],
-                  methods: []};
+                  lookups: []};
         $scope.project.controllers.push(ct);
         $scope.selectedController = ct;
+        $scope.selectedControllerIndex = $scope.project.controllers.length-1;
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
       });          
@@ -504,12 +708,17 @@ angular.module('composerApp')
     $scope.selectController = function (data, index) {
       $scope.selectedControllerIndex = index;
       $scope.selectedController = data;
+      $scope.selectedService = null;
+      $scope.selectedServiceIndex = null;
+      $scope.selectedLookup = null;
+      $scope.selectedLookupIndex = null;
+      $scope.selectedMethod = null;
+      $scope.selectedMethodIndex = null;
     };
     
-    $scope.editcontroller = function (controller, index) {
+    $scope.editcontroller = function (data, index) {
       $scope.selectedControllerIndex = index;
-      $scope.selectedController = controller;
-      var data = controller;
+      $scope.selectedController = data;
       var modalInstance = $modal.open({
         animation: false,
         templateUrl: 'controllerContent.html',
@@ -520,9 +729,11 @@ angular.module('composerApp')
             return {controllername: data.controllername,
                     modelparampluralname: data.modelparampluralname,
                     services: data.services,
-                    models: $scope.project.models,
                     lookups: data.lookups,
                     methods: data.methods};
+          },                    
+          models: function () {
+            return $scope.project.models;
           }
         }
       });
@@ -542,108 +753,43 @@ angular.module('composerApp')
     };
     
     $scope.removecontroller = function (index) {
+      toaster.pop('error', "Controller", $scope.project.controllers[index].controllername + ', deleted');
       $scope.project.controllers.splice(index, 1);
-      if($scope.project.controllers.length > 1){
-        $scope.selectedControllerlIndex = index -1;
+      if($scope.project.controllers.length > 0){
+        $scope.selectedService = null;
+        $scope.selectedServiceIndex = null;
+        $scope.selectedLookup = null;
+        $scope.selectedLookupIndex = null;
+        $scope.selectedMethod = null;
+        $scope.selectedMethodIndex = null;         
+        $scope.selectedControllerlIndex = index;
         $scope.selectedController = $scope.project.controllers[index];
       }else{
         $scope.selectedControllerIndex = null;
         $scope.selectedController = null;
+        $scope.selectedService = null;
+        $scope.selectedServiceIndex = null;
+        $scope.selectedLookup = null;
+        $scope.selectedLookupIndex = null;
+        $scope.selectedMethod = null;
+        $scope.selectedMethodIndex = null;         
       }
     };
     
     $scope.removeallcontrollers = function () {
+      toaster.pop('error', "Controller", 'All items, deleted');
       $scope.project.controllers.splice(0);
+      $scope.selectedController = null;
+      $scope.selectedControllerIndex = null;
+      $scope.selectedService = null;
+      $scope.selectedServiceIndex = null;
+      $scope.selectedLookup = null;
+      $scope.selectedLookupIndex = null;
+      $scope.selectedMethod = null;
+      $scope.selectedMethodIndex = null;       
     };
     //controller related functions ends here
 
-    //service functions starts here
-    $scope.newservice = function () {
-      var modalInstance = $modal.open({
-        animation: false,
-        templateUrl: 'serviceContent.html',
-        controller: 'ServiceInstanceCtrl',
-        size: 'sm',
-        resolve: {
-          service: function () {
-            var service = {servicename: '', 
-                            modelname: $scope.selectedController.modelname, 
-                            models: $scope.project.models};
-            return service;
-          }          
-        }
-      });
-
-      modalInstance.result.then(function (data) {
-        $scope.selectedController.services.push(data.servicename);
-      }, function () {
-        $log.info('Modal dismissed at: ' + new Date());
-      });          
-    };
-
-    $scope.removeservice = function (index) {
-      $scope.selectedController.services.splice(index, 1);
-    };
-    //service functions ends here    
-
-    //lookup related functions start
-    $scope.searchLookup = function () {
-      $scope.searchLookupFlag = !$scope.searchLookupFlag;
-    };
-    
-    $scope.newlookup = function () {
-      var modalInstance = $modal.open({
-        animation: false,
-        templateUrl: 'lookupContent.html',
-        controller: 'LookupInstanceCtrl',
-        size: 'lg',
-        resolve: {
-          lookup: function () {
-            var l = {lookupname: '', 
-                      expression: ''};
-            return l;
-          }
-        }
-      });
-
-      modalInstance.result.then(function (lookup) {
-        $scope.selectedController.lookups.push(lookup);
-      }, function () {
-        $log.info('Modal dismissed at: ' + new Date());
-      });
-    };
-    
-    $scope.editlookup = function (data, index) {
-      var modalInstance = $modal.open({
-        animation: false,
-        templateUrl: 'lookupContent.html',
-        controller: 'LookupInstanceCtrl',
-        size: 'lg',
-        resolve: {
-          lookup: function () {
-            var l = {lookupname: data.lookupname, 
-                      expression: data.expression};
-            return l;
-          }
-        }
-      });
-
-      modalInstance.result.then(function (lookup) {
-        $scope.selectedController.lookups[index] = lookup;
-      }, function () {
-        $log.info('Modal dismissed at: ' + new Date());
-      });
-    };
-    
-    $scope.removelookup = function (index) {
-      $scope.selectedController.lookups.splice(index, 1);
-    };
-    
-    $scope.removealllookups = function () {
-      $scope.selectedController.lookups.splice(0);
-    };
-    //lookup related functions end    
-    
     //method related functions starts here
     $scope.searchMethod = function () {
       $scope.searchMethodFlag =  !$scope.searchMethodFlag;
@@ -667,11 +813,18 @@ angular.module('composerApp')
 
       modalInstance.result.then(function (method) {
         $scope.selectedController.methods.push(method);
+        $scope.selectedMethod = method;
+        $scope.selectedMethodIndex = $scope.selectedController.methods.length-1;        
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
       });          
     };
 
+    $scope.selectMethod = function (method, index) {
+      $scope.selectedMethod = method;
+      $scope.selectedMethodIndex = index;
+    }; 
+    
     $scope.editmethod = function (method, index) {
       $scope.selectedMethodIndex = index;
       $scope.selectedMethod = method;
@@ -698,13 +851,133 @@ angular.module('composerApp')
     };
     
     $scope.removemethod = function (index) {
+      toaster.pop('error', "Method", $scope.selectedController.methods[index].methodname + ', deleted');
       $scope.selectedController.methods.splice(index, 1);
     };
     
     $scope.removeallmethods = function () {
-      $scope.selectedController.methods.splice(0);
+      if ($scope.selectedController) {
+        toaster.pop('error', "Method", 'All items, deleted');
+        $scope.selectedController.methods.splice(0);
+      }
     };
     //method related functions ends here
+    
+    //service functions starts here
+    $scope.newservice = function () {
+      var modalInstance = $modal.open({
+        animation: false,
+        templateUrl: 'serviceContent.html',
+        controller: 'ServiceInstanceCtrl',
+        size: 'sm',
+        resolve: {
+          service: function () {
+            var service = {servicename: ''};
+            return service;
+          },
+          modelname: function () {
+            if($scope.selectedController){
+              var result = $scope.project.models.filter(function (model) {
+                  if (model.parampluralname === $scope.selectedController.modelparampluralname)
+                  return model;
+              })[0].name;
+              return result;
+            }
+          },
+          models: function () {
+            return $scope.project.models;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (data) {
+        $scope.selectedController.services.push(data.servicename);
+        $scope.selectedService = data;
+        $scope.selectedServiceIndex = $scope.selectedController.services.length-1;           
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });          
+    };
+
+    $scope.selectService = function (service, index) {
+      $scope.selectedService = service;
+      $scope.selectedServiceIndex = index;
+    };    
+
+    $scope.removeservice = function (index) {
+      toaster.pop('error', "Service", $scope.selectedController.services[index] + ', deleted');
+      $scope.selectedController.services.splice(index, 1);
+    };
+    //service functions ends here    
+
+    //lookup related functions start
+    $scope.searchLookup = function () {
+      $scope.searchLookupFlag = !$scope.searchLookupFlag;
+    };
+    
+    $scope.newlookup = function () {
+      var modalInstance = $modal.open({
+        animation: false,
+        templateUrl: 'lookupContent.html',
+        controller: 'LookupInstanceCtrl',
+        size: 'lg',
+        resolve: {
+          lookup: function () {
+            var l = {lookupname: '', 
+                      expression: ''};
+            return l;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (lookup) {
+        $scope.selectedController.lookups.push(lookup);
+        $scope.selectedLookup = lookup;
+        $scope.selectedLookupIndex = $scope.selectedController.lookups.length-1;           
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });
+    };
+    
+    $scope.selectLookup = function (lookup, index) {
+      $scope.selectedLookup = lookup;
+      $scope.selectedLookupIndex = index;
+    }; 
+    
+    $scope.editlookup = function (data, index) {
+      var modalInstance = $modal.open({
+        animation: false,
+        templateUrl: 'lookupContent.html',
+        controller: 'LookupInstanceCtrl',
+        size: 'lg',
+        resolve: {
+          lookup: function () {
+            var l = {lookupname: data.lookupname, 
+                      expression: data.expression};
+            return l;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (lookup) {
+        $scope.selectedController.lookups[index] = lookup;
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });
+    };
+    
+    $scope.removelookup = function (index) {
+      toaster.pop('error', "Lookup", $scope.selectedController.lookups[index].lookupname + ', deleted');
+      $scope.selectedController.lookups.splice(index, 1);
+    };
+    
+    $scope.removealllookups = function () {
+      if ($scope.selectedController) {
+        toaster.pop('error', "Lookup", 'All items, deleted');
+        $scope.selectedController.lookups.splice(0);
+      }
+    };
+    //lookup related functions end    
     
     //view related functions start 
     $scope.searchView = function () {
@@ -724,11 +997,15 @@ angular.module('composerApp')
           view: function () {
             var view = {viewtype: '', 
                         modelname: '', 
-                        models: $scope.project.models, 
-                        menus: $scope.project.menus,
                         menuname: '',
-                        controls: []};    
+                        sections:[{controllername: '', sectionsize: 12, controls: []}]};
             return view;
+          },
+          models: function () {
+            return $scope.project.models;
+          },
+          menus: function () {
+            return $scope.project.menus;
           }
         }
       });
@@ -742,32 +1019,50 @@ angular.module('composerApp')
                   modelparampluralname: changeCase.paramCase(pluralize(view.modelname)),
                   modelcamelcasename: changeCase.camelCase(view.modelname),
                   menuname: view.menuname,
-                  controls: []};
-        
-        for (var m = 0; m < $scope.project.models.length; m++) {
-          var md = $scope.project.models[m];
-          if(md.name === view.modelname) {
-            for(var i = 0; i < md.elements.length; i++) {
-                var e = md.elements[i];
-                var et = '';
-                if(e.elementtype === 'String'){
-                  et = 'Text';
-                }else{
-                  et = e.elementtype;
-                }
-                var c = { controlname : e.elementname,
-                          controltype : et,
-                          width       : 3,
-                          modelelement: e.elementname,
-                          controllabel: changeCase.titleCase(e.elementname),
-                          exampletext : '',
-                          options: ''};   
-                  v.controls.push(c);            
+                  sections:[{controllername: pluralize(view.modelname) + 'Controller', sectionsize: 12, controls: []}]};
+
+        var md = $scope.project.models.filter(function (model) {
+                        if (model.name === view.modelname) return model;
+                      })[0];                  
+        for(var i = 0; i < md.elements.length; i++) {
+          var e = md.elements[i];
+          var et = '';
+          if(e.elementtype === 'String'){
+            et = 'Text';
+          }else{
+            et = e.elementtype;
+          }
+          var c = { controlname : e.elementname,
+                    controltype : et,
+                    width       : 3,
+                    modelelement: e.elementname,
+                    controllabel: changeCase.titleCase(e.elementname),
+                    exampletext : '',
+                    options     : '',
+                    nestedcontrols: []};
+          if(e.elementtype ==='Nested'){
+            for (var ni = 0; ni < e.elements.length; ni++){
+              var ne = e.elements[ni];
+              var net = '';
+              if(ne.elementtype === 'String'){
+                net = 'Text';
+              }else{
+                net = ne.elementtype;
+              }              
+              var nc = { controlname: ne.elementname,
+                        controltype : net,
+                        width       : 3,
+                        modelelement: ne.elementname,
+                        controllabel: changeCase.titleCase(ne.elementname),
+                        exampletext : '',
+                        options     : ''};
+              c.nestedcontrols.push(nc);
             }
           }
+          v.sections[0].controls.push(c);
         }
-        
-        for (var mc = 0; m < $scope.project.menus.length; m++) {
+                  
+        for (var mc = 0; mc < $scope.project.menus.length; mc++) {
           if($scope.project.menus[mc].menuname === v.menuname) {
             for (var sm = 0; sm < $scope.project.menus[mc].submenus.length; sm++) {
               if($scope.project.menus[mc].submenus[sm].menuname === v.modelparampluralname) {
@@ -783,7 +1078,8 @@ angular.module('composerApp')
         
         $scope.project.views.push(v);
         $scope.selectedView = v;
-        
+        $scope.selectedViewIndex = $scope.project.views.length-1;        
+
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
       });          
@@ -792,6 +1088,10 @@ angular.module('composerApp')
     $scope.selectView = function (data, index) {
       $scope.selectedView = data;
       $scope.selectedViewIndex = index;
+      $scope.selectedSection = null;
+      $scope.selectedSectionIndex = null;
+      $scope.selectedControl = null;
+      $scope.selectedControlIndex = null;
     };
     
     $scope.editview = function (view, index) {
@@ -808,13 +1108,16 @@ angular.module('composerApp')
             var view = {viewtype: data.viewtype, 
                         viewname: data.viewname, 
                         modelname: data.modelname, 
-                        models: $scope.project.models, 
-                        menus: $scope.project.menus,
                         menuname: data.menuname,
-                        controls: data.controls}; 
+                        sections: data.sections}; 
             return view;
-            
-          }          
+          },
+          models: function () {
+            return $scope.project.models;
+          },
+          menus: function () {
+            return $scope.project.menus;
+          } 
         }
       });
 
@@ -827,30 +1130,47 @@ angular.module('composerApp')
                   modelparampluralname: changeCase.paramCase(pluralize(view.modelname)),
                   modelcamelcasename: changeCase.camelCase(view.modelname),
                   menuname: view.menuname,
-                  controls: []};
+                  sections:[{controllername: pluralize(view.modelname) + 'Controller', sectionsize: 12, controls: []}]};
         
-        for (var m = 0; m < $scope.project.models.length; m++) {
-          var md = $scope.project.models[m];
-          if(md.name === view.modelname) {
-        
-            for(var i = 0; i < md.elements.length; i++) {
-                var e = md.elements[i];
-                var et = '';
-                if(e.elementtype === 'String'){
-                  et = 'Text';
-                }else{
-                  et = e.elementtype;
-                }                  
-                var c = { controlname : e.elementname,
-                          controltype : et,
-                          width       : 3,
-                          modelelement: e.elementname,
-                          controllabel: changeCase.titleCase(e.elementname),
-                          exampletext : '' };   
-              v.controls.push(c);
-              
+        var md = $scope.project.models.filter(function (model) {
+                        if (model.name === view.modelname) return model;
+                      })[0];
+        for(var i = 0; i < md.elements.length; i++) {
+          var e = md.elements[i];
+          var et = '';
+          if(e.elementtype === 'String'){
+            et = 'Text';
+          }else{
+            et = e.elementtype;
+          }                  
+          var c = { controlname : e.elementname,
+                    controltype : et,
+                    width       : 3,
+                    modelelement: e.elementname,
+                    controllabel: changeCase.titleCase(e.elementname),
+                    exampletext : '',
+                    options     : '',
+                    nestedcontrols: []};
+          if(e.elementtype ==='Nested'){
+            for (var ni = 0; ni < e.elements.length; ni++){
+              var ne = e.elements[ni];
+              var net = '';
+              if(ne.elementtype === 'String'){
+                net = 'Text';
+              }else{
+                net = ne.elementtype;
+              }              
+              var nc = { controlname : ne.elementname,
+                        controltype : net,
+                        width       : 3,
+                        modelelement: ne.elementname,
+                        controllabel: changeCase.titleCase(ne.elementname),
+                        exampletext : '',
+                        options     : ''};
+              c.nestedcontrols.push(nc);
             }
           }
+          v.sections[0].controls.push(c);
         }
         
         for (var mn = 0; mn < $scope.project.menus.length; mn++) {
@@ -877,21 +1197,114 @@ angular.module('composerApp')
     };
     
     $scope.removeview = function (index) {
+      toaster.pop('error', "View", $scope.project.views[index].viewname + ', deleted');
       $scope.project.views.splice(index, 1);
-      if($scope.project.views.length > 1){
-        $scope.selectedViewIndex = index -1;
-        $scope.selectedView = $scope.project.models[index];
+      if($scope.project.views.length > 0){
+        $scope.selectedControl = null;
+        $scope.selectedControlIndex = null;
+        $scope.selectedSection = null;
+        $scope.selectedSectionIndex = null;                 
+        $scope.selectedViewIndex = index;
+        $scope.selectedView = $scope.project.views[index];
       }else{
+        $scope.selectedSection = null;
+        $scope.selectedSectionIndex = null;         
+        $scope.selectedControl = null;
+        $scope.selectedControlIndex = null;         
         $scope.selectedViewIndex = null;
         $scope.selectedView = null;
       }
     };
     
     $scope.removeallviews = function () {
+      toaster.pop('error', "View", 'All items, deleted');
       $scope.project.views.splice(0);
+      $scope.selectedViewIndex = null;
+      $scope.selectedView = null;
+      $scope.selectedControl = null;
+      $scope.selectedControlIndex = null;         
     };
     //view related functions end
+
+    //Section related functions start
+    $scope.searchSection = function () {
+      $scope.searchSectionFlag = !$scope.searchSectionFlag;
+    };
     
+    $scope.newsection = function () {
+      var modalInstance = $modal.open({
+        animation: false,
+        templateUrl: 'sectionContent.html',
+        controller: 'SectionInstanceCtrl',
+        size: 'sm',
+        resolve: {
+          section: function () {
+            var se = {controllername: '', 
+                      sectionsize: 12};
+            return se;
+          },
+          controllers: function () {
+            return $scope.project.controllers;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (section) {
+        $scope.selectedView.sections.push(section);
+        $scope.selectedSection = section;
+        $scope.selectedSectionIndex = $scope.selectedView.sections.length-1;          
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });
+    };
+    
+    $scope.selectSection = function (section, index) {
+      $scope.selectedSection = section;
+      $scope.selectedSectionIndex = index;
+    }; 
+    
+    $scope.editsection = function (data, index) {
+      var modalInstance = $modal.open({
+        animation: false,
+        templateUrl: 'sectionContent.html',
+        controller: 'SectionInstanceCtrl',
+        size: 'sm',
+        resolve: {
+          section: function () {
+            var se = {controllername: data.controllername, 
+                      sectionsize: data.sectionsize};
+            return se;
+          },
+          controllers: function () {
+            return $scope.project.controllers;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (section) {
+        $scope.selectedView.sections[index] = section;
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });
+    };
+    
+    $scope.removesection = function (index) {
+      toaster.pop('error', "Section ", $scope.selectedView.sections[index].controllername + ', deleted');
+      $scope.selectedView.sections.splice(index, 1);
+      $scope.selectedSection = null;
+      $scope.selectedSectionIndex = null;         
+      $scope.selectedControl = null;
+      $scope.selectedControlIndex = null;         
+    };
+    
+    $scope.removeallsections = function () {
+      if($scope.selectedView){
+        toaster.pop('error', "Section", 'All items, deleted');
+        $scope.selectedView.sections.splice(0);
+      }
+    };
+    //Section related functions end    
+
     //control related functions start
     $scope.searchControl = function () {
       $scope.searchControlFlag = !$scope.searchControlFlag;
@@ -905,31 +1318,34 @@ angular.module('composerApp')
         size: 'lg',
         resolve: {
           control: function () {
-            var c = {controlname: '', 
-                      controltype: '',
-                      width: '',
-                      modelelement: '',
-                      controllabel: '',
-                      exampletext: '',
-                      options: '',
-                      isreadonly: false};
+            var c = {controlname: '',nestedcontrols: []};
             return c;
           },
-          view: function () {
-            var v = $scope.selectedView;
-            return v;
+          viewtype: function () {
+            if ($scope.selectedView) {
+              return $scope.selectedView.viewtype;
+            }
           }
         }
       });
 
       modalInstance.result.then(function (control) {
         control.controlname = control.controlname.replace(/ /g, '');
-        $scope.selectedView.controls.push(control);
+        $scope.selectedSection.controls.push(control);
+        $scope.selectedControl = control;
+        $scope.selectedControlIndex = $scope.selectedSection.controls.length-1;
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
       });
      
     };
+    
+    $scope.selectControl = function (control, index) {
+      $scope.selectedControl = control;
+      $scope.selectedControlIndex = index;
+      $scope.selectedNestedControl = control;
+      $scope.selectedNestedControlIndex = index;
+    };     
     
     $scope.editcontrol = function (data, index) {
       var modalInstance = $modal.open({
@@ -946,30 +1362,34 @@ angular.module('composerApp')
                       controllabel: data.controllabel,
                       exampletext: data.exampletext,
                       options: data.options,
-                      isreadonly: data.isreadonly};
+                      isreadonly: data.isreadonly,
+                      nestedcontrols: data.nestedcontrols};
             return c;
           },
-          view: function () {
-            var v = $scope.selectedView;
-            return v;
+          viewtype: function () {
+            return $scope.selectedView.viewtype;
           }
         }
       });
 
       modalInstance.result.then(function (control) {
         control.controlname = control.controlname.replace(/ /g, '');
-        $scope.selectedView.controls[index] = control;
+        $scope.selectedSection.controls[index] = control;
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
       });
     };
     
     $scope.removecontrol = function (index) {
-      $scope.selectedView.controls.splice(index, 1);
+      toaster.pop('error', "Control", $scope.selectedSection.controls[index].controlname + ', deleted');
+      $scope.selectedSection.controls.splice(index, 1);
     };
     
     $scope.removeallcontrols = function () {
-      $scope.selectedView.controls.splice(0);
+      if($scope.selectedSection){
+        toaster.pop('error', "Control", 'All items, deleted');
+        $scope.selectedSection.controls.splice(0);
+      }
     };
     
     $scope.copycontrols = function () {
@@ -980,36 +1400,45 @@ angular.module('composerApp')
         controller: 'CopyControlsInstanceCtrl',
         size: 'sm',
         resolve: {
-          /*project: function () {
-            return $scope.project;
-          }*/        
           views: function () {
             return $scope.project.views;
           }
         }
       });
 
-      modalInstance.result.then(function (view) {
-        
-        var controls = [];
-        
-        for (var i = 0; i < view.controls.length; i++) {
-          var c = { controlname : view.controls[i].controlname,
-                    controltype : view.controls[i].controltype,
-                    width       : view.controls[i].width,
-                    modelelement: view.controls[i].modelelement,
-                    controllabel: view.controls[i].controllabel,
-                    exampletext : view.controls[i].exampletext,
-                    options     : view.controls[i].options};   
-          controls.push(c);
+      modalInstance.result.then(function (section) {
+        if(section){
+          var controls = [];
+          for (var i = 0; i < section.controls.length; i++) {
+            var control = section.controls[i];
+            var c = { controlname : control.controlname,
+                      controltype : control.controltype,
+                      width       : control.width,
+                      modelelement: control.modelelement,
+                      controllabel: control.controllabel,
+                      exampletext : control.exampletext,
+                      options     : control.options,
+                      nestedcontrols: []};
+            if(control.controltype==='Nested'){
+              for (var ni = 0; ni < control.nestedcontrols.length; ni++) {
+                var nestedcontrol = control.nestedcontrols[ni];
+                var nc = { controlname : nestedcontrol.controlname,
+                            controltype : nestedcontrol.controltype,
+                            width       : nestedcontrol.width,
+                            modelelement: nestedcontrol.modelelement,
+                            controllabel: nestedcontrol.controllabel,
+                            exampletext : nestedcontrol.exampletext,
+                            options     : nestedcontrol.options};
+                c.push(nc);
+              }
+            }
+            controls.push(c);
+          }
+          $scope.selectedSection.controls = controls;
         }
-        
-        $scope.project.views[$scope.selectedViewIndex].controls = controls;
-        
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
       });   
-      
     };
     
     $scope.exportControls = function () {
@@ -1017,11 +1446,113 @@ angular.module('composerApp')
     };    
     //control related functions end
 
-    $scope.displayFileContents = function(contents) {
+    //nested control related functions start
+    $scope.searchNestedControl = function () {
+      $scope.searchNestedControlFlag = !$scope.searchNestedControlFlag;
+    };
+    
+    $scope.newnestedcontrol = function () {
+      var modalInstance = $modal.open({
+        animation: false,
+        templateUrl: 'nestedcontrolContent.html',
+        controller: 'NestedControlInstanceCtrl',
+        size: 'lg',
+        resolve: {
+          nestedcontrol: function () {
+            var c = {controlname: ''};
+            return c;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (nestedcontrol) {
+        nestedcontrol.controlname = nestedcontrol.controlname.replace(/ /g, '');
+        $scope.selectedControl.nestedcontrols.push(nestedcontrol);
+        $scope.selectedNestedControl = nestedcontrol;
+        $scope.selectedNestedControlIndex = $scope.selectedControl.nestedcontrols.length-1;        
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });
+     
+    };
+    
+    $scope.selectNestedControl = function (nestedcontrol, index) {
+      $scope.selectedNestedControl = nestedcontrol;
+      $scope.selectedNestedControlIndex = index;
+    };     
+    
+    $scope.editnestedcontrol = function (data, index) {
+      var modalInstance = $modal.open({
+        animation: false,
+        templateUrl: 'nestedcontrolContent.html',
+        controller: 'NestedControlInstanceCtrl',
+        size: 'lg',
+        resolve: {
+          nestedcontrol: function () {
+            var c = {controlname: data.controlname, 
+                      controltype: data.controltype,
+                      width: data.width,
+                      modelelement: data.modelelement,
+                      controllabel: data.controllabel,
+                      exampletext: data.exampletext,
+                      options: data.options};
+            return c;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (nestedcontrol) {
+        nestedcontrol.controlname = nestedcontrol.controlname.replace(/ /g, '');
+        $scope.selectedControl.nestedcontrols[index] = nestedcontrol;
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });
+    };
+    
+    $scope.removenestedcontrol = function (index) {
+      toaster.pop('error', "Nested Control", $scope.selectedControl.nestedcontrols[index].controlname + ', deleted');
+      $scope.selectedControl.nestedcontrols.splice(index, 1);
+    };
+    
+    $scope.removeallnestedcontrols = function () {
+      toaster.pop('error', "Nested Control", 'All items, deleted');
+      $scope.selectedControl.nestedcontrols.splice(0);
+    };
+    //nested control related functions end
+
+    
+    $scope.loadJSON = function(contents) {
       var c = angular.fromJson(contents);
       //c.projectdate = new Date(moment(c.projectdate).format("YYYY-MM-DD"));
       $scope.project = c;
-      $scope.selectedModel = null;
+      if (c.menus.length > 0){
+        $scope.selectedSubMenu = null;
+        $scope.selectedSubMenuIndex = null;
+        $scope.selectedMenu = c.menus[0];
+        $scope.selectedMenuIndex = 0;
+      }
+      if (c.models.length > 0){
+        $scope.selectedElement = null;
+        $scope.selectedElementIndex = null;
+        $scope.selectedModel = c.models[0];
+        $scope.selectedModelIndex = [0];
+      }
+      if (c.controllers.length > 0){
+        $scope.selectedService = null;
+        $scope.selectedServiceIndex = null;
+        $scope.selectedLookup = null;
+        $scope.selectedLookupIndex = null;
+        $scope.selectedMethod = null;
+        $scope.selectedMethodIndex = null;        
+        $scope.selectedControllerIndex = 0;
+        $scope.selectedController = c.controllers[0];
+      }
+      if (c.views.length > 0){
+        $scope.selectedControl = null;
+        $scope.selectedControlIndex = null;         
+        $scope.selectedView = c.views[0];
+        $scope.selectedViewIndex = 0;
+      }
     };
     
     $scope.saveJSON = function () {
@@ -1034,22 +1565,56 @@ angular.module('composerApp')
 			downloadLink[0].click();
 		};    
 
-    $scope.resetProject = function () {
+    $scope.resetJSON = function () {
       $scope.project = {name: 'Project1',  menus: [], models: [], controllers: [], views: []};
+      $scope.selectedMenu = null;
+      $scope.selectedMenuIndex = null;
+      $scope.selectedSubMenu = null;
+      $scope.selectedSubMenuIndex = null;    
+      $scope.selectedModel = null;
+      $scope.selectedModelIndex = null;
+      $scope.selectedElement = null;
+      $scope.selectedElementIndex = null;    
+      $scope.selectedControllerIndex = null;
+      $scope.selectedController = null;
+      $scope.selectedService = null;
+      $scope.selectedServiceIndex = null;
+      $scope.selectedLookup = null;
+      $scope.selectedLookupIndex = null;
+      $scope.selectedMethod = null;
+      $scope.selectedMethodIndex = null;
+      $scope.selectedView = null;
+      $scope.selectedViewIndex = null;
+      $scope.selectedControl = null;
+      $scope.selectedControlIndex = null;    
+      //$scope.alerts = [];
+      
+      $scope.searchMenuFlag = false;
+      $scope.searchSubMenuFlag = false;
+      $scope.searchModelFlag = false;
+      $scope.searchElementFlag = false;
+      $scope.searchNestedElementFlag = false;
+      $scope.searchControllerFlag = false;
+      $scope.searchLookupFlag = false;
+      $scope.searchMethodFlag = false;
+      $scope.searchViewFlag = false;
+      $scope.searchControlFlag = false;  
+      $scope.searchNestedControlFlag = false;  
     };
+    
+    $scope.closeAlert = function(index) {
+      $scope.alerts.splice(index, 1);
+    };    
     
     $scope.viewJSON = function () {
       $scope.viewJSONValue = !$scope.viewJSONValue;
     };
     
-    $scope.print = function() {
+    $scope.printJSON = function() {
       window.print();
     };
     
   });
-
-// Please note that $modalInstance represents a modal window (instance) dependency.
-// It is not the same as the $modal service used above.
 
 angular.module('composerApp').controller('MenuInstanceCtrl', function ($scope, $modalInstance, menu) {
 
@@ -1125,9 +1690,11 @@ angular.module('composerApp').controller('CreateViewsInstanceCtrl', function ($s
 
 });
 
-angular.module('composerApp').controller('ElementInstanceCtrl', function ($scope, $modalInstance, element) {
+angular.module('composerApp').controller('ElementInstanceCtrl', function ($scope, $modalInstance, element, modelname, models) {
 
   $scope.element = element;
+  $scope.modelname = modelname;
+  $scope.models = models;
 
   $scope.ok = function () {
     $modalInstance.close($scope.element);
@@ -1139,9 +1706,26 @@ angular.module('composerApp').controller('ElementInstanceCtrl', function ($scope
 
 });
 
-angular.module('composerApp').controller('ControllerInstanceCtrl', function ($scope, $modalInstance, controller) {
+angular.module('composerApp').controller('NestedElementInstanceCtrl', function ($scope, $modalInstance, nestedelement, modelname, models) {
+
+  $scope.nestedelement = nestedelement;
+  $scope.modelname = modelname;
+  $scope.models = models;
+
+  $scope.ok = function () {
+    $modalInstance.close($scope.nestedelement);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+
+});
+
+angular.module('composerApp').controller('ControllerInstanceCtrl', function ($scope, $modalInstance, controller, models) {
 
   $scope.controller = controller;
+  $scope.models = models;
   
   $scope.ok = function () {
     $modalInstance.close($scope.controller);
@@ -1153,10 +1737,12 @@ angular.module('composerApp').controller('ControllerInstanceCtrl', function ($sc
 
 });
 
-angular.module('composerApp').controller('ServiceInstanceCtrl', function ($scope, $modalInstance, service) {
+angular.module('composerApp').controller('ServiceInstanceCtrl', function ($scope, $modalInstance, service, modelname, models) {
 
   $scope.service = service;
-  
+  $scope.modelname = modelname;
+  $scope.models = models;
+
   $scope.ok = function () {
     $modalInstance.close($scope.service);
   };
@@ -1195,9 +1781,11 @@ angular.module('composerApp').controller('MethodInstanceCtrl', function ($scope,
 
 });
 
-angular.module('composerApp').controller('ViewInstanceCtrl', function ($scope, $modalInstance, view) {
+angular.module('composerApp').controller('ViewInstanceCtrl', function ($scope, $modalInstance, view, models, menus) {
 
   $scope.view = view;
+  $scope.models = models;
+  $scope.menus = menus;
 
   $scope.ok = function () {
     $modalInstance.close( $scope.view );
@@ -1209,10 +1797,25 @@ angular.module('composerApp').controller('ViewInstanceCtrl', function ($scope, $
 
 });
 
-angular.module('composerApp').controller('ControlInstanceCtrl', function ($scope, $modalInstance, control, view) {
+angular.module('composerApp').controller('SectionInstanceCtrl', function ($scope, $modalInstance, section, controllers) {
+
+  $scope.section = section;
+  $scope.controllers = controllers;
+  
+  $scope.ok = function () {
+    $modalInstance.close($scope.section);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+
+});
+
+angular.module('composerApp').controller('ControlInstanceCtrl', function ($scope, $modalInstance, control, viewtype) {
 
   $scope.control = control;
-  $scope.view = view;
+  $scope.viewtype = viewtype;
 
   $scope.ok = function () {
     $modalInstance.close($scope.control);
@@ -1229,7 +1832,21 @@ angular.module('composerApp').controller('CopyControlsInstanceCtrl', function ($
   $scope.views = views;
 
   $scope.ok = function () {
-    $modalInstance.close($scope.view);
+    $modalInstance.close($scope.section);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+
+});
+
+angular.module('composerApp').controller('NestedControlInstanceCtrl', function ($scope, $modalInstance, nestedcontrol) {
+
+  $scope.nestedcontrol = nestedcontrol;
+
+  $scope.ok = function () {
+    $modalInstance.close($scope.nestedcontrol);
   };
 
   $scope.cancel = function () {

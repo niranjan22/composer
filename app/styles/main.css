@@ -95,5 +95,15 @@ body {
   }
 }
 
+.table thead {
+    background-color:#E26B0A;
+    font-weight: bold;
+    /*color: white;*/
+}
+
+.selected {
+    background-color:#FCD5B4;
+    /*color:white;*/
+}
 
 #.form-control { text-transform: capitalize }

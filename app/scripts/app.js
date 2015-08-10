@@ -10,26 +10,30 @@
  */
 angular
   .module('composerApp', [
-    'ngRoute', 'ui.bootstrap', 'change-case', 'ngSanitize', 'ngCsv'
+    'ngRoute', 'ui.bootstrap', 'change-case', 'ngAnimate', 'ngSanitize', 'ngCsv', 'toaster'
   ])
   .config(function ($routeProvider) {
     $routeProvider
-/*       .when('/main', {
+    
+/*    .when('/main', {
         templateUrl: 'views/main.html',
         controller: 'MainCtrl',
         controllerAs: 'main'
       })
- */      .when('/about', {
+      .when('/about', {
         templateUrl: 'views/about.html',
         controller: 'AboutCtrl',
         controllerAs: 'about'
       })
+*/    
       .when('/', {
         templateUrl: 'views/project.html',
         controller: 'ProjectCtrl',
         controllerAs: 'project'
-      })
-      .otherwise({
-        redirectTo: '/'
       });
+      
+/*    .otherwise({
+        redirectTo: '/'
+      }) 
+*/
   });
