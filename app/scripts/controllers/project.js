@@ -878,8 +878,9 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
           modelname: function () {
             if($scope.selectedController){
               var result = $scope.project.models.filter(function (model) {
-                  if (model.parampluralname === $scope.selectedController.modelparampluralname)
-                  return model;
+                  if (model.parampluralname === $scope.selectedController.modelparampluralname){
+                    return model;
+                  }
               })[0].name;
               return result;
             }
@@ -1022,8 +1023,10 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                   sections:[{controllername: pluralize(view.modelname) + 'Controller', sectionsize: 12, controls: []}]};
 
         var md = $scope.project.models.filter(function (model) {
-                        if (model.name === view.modelname) return model;
-                      })[0];                  
+                    if (model.name === view.modelname) {
+                      return model;
+                    }
+                  })[0];                  
         for(var i = 0; i < md.elements.length; i++) {
           var e = md.elements[i];
           var et = '';
@@ -1133,8 +1136,10 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                   sections:[{controllername: pluralize(view.modelname) + 'Controller', sectionsize: 12, controls: []}]};
         
         var md = $scope.project.models.filter(function (model) {
-                        if (model.name === view.modelname) return model;
-                      })[0];
+                    if (model.name === view.modelname) {
+                      return model;
+                    }
+                  })[0];
         for(var i = 0; i < md.elements.length; i++) {
           var e = md.elements[i];
           var et = '';
@@ -1612,6 +1617,15 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
     
     $scope.printJSON = function() {
       window.print();
+    };
+    
+    $scope.moduleList = [];
+    var statictext = 'yo meanjs:crud-module ';
+    $scope.listModules = function () {
+      $scope.project.models.forEach(function (item) {
+        $scope.moduleList.splice(0);
+        $scope.moduleList.push(statictext + changeCase.titleCase(item.paramname).replace(/ /g, '-'));
+      });
     };
     
   });

@@ -979,6 +979,12 @@
                       <button class="btn btn-primary" ng-click="saveJSON()" ng-href="{{ url }}" >Export</button>
                       <button class="btn btn-primary" ng-click="resetJSON()" ><span class="glyphicon glyphicon-trash"></span></button>
                     </div>
+                    <div class="col-md-12">
+                      <button class="btn btn-primary" ng-click="listModules()" >List</button>
+                      <div ng-repeat="module in moduleList">
+                        <span>{{module}}</span>
+                      </div>
+                    </div>
                     <pre class="col-md-12">{{ project | json}}</pre>
                   </div>
                 </tab>
