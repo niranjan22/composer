@@ -1622,10 +1622,12 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
     $scope.moduleList = [];
     var statictext = 'yo meanjs:crud-module ';
     $scope.listModules = function () {
+      $scope.moduleList.splice(0);
       $scope.project.models.forEach(function (item) {
-        $scope.moduleList.splice(0);
+        console.log('item.paramname', item.paramname);
         $scope.moduleList.push(statictext + changeCase.titleCase(item.paramname).replace(/ /g, '-'));
       });
+      
     };
     
   });
