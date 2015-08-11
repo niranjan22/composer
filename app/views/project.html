@@ -288,7 +288,8 @@
                             <div ng-show="element.elementtype=='Schema.Types.ObjectId'" class="form-group">
                               <label for="element-schema-object-ref">Schema Object Ref</label>
                               <select class="form-control" id="element-schema-object-ref" ng-model="element.schemaobjref" 
-                              ng-options= "model.name as model.name for model in models | filter:'!{{ modelname }}':true" />
+                              ng-options= "model.name as model.name for model in models | filter:'!{{ modelname }}':true" >
+                              </select>
                             </div>
                             <div ng-show="element.elementtype=='Nested'" class="checkbox">
                                 <label>

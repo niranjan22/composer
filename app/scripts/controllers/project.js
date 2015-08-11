@@ -1710,7 +1710,12 @@ angular.module('composerApp').controller('ElementInstanceCtrl', function ($scope
 
   $scope.element = element;
   $scope.modelname = modelname;
-  $scope.models = models;
+  var modelList = []
+  models.forEach(function (model) {
+    modelList.push({name: model.name});
+  });
+  modelList.push({name: 'User'});
+  $scope.models = modelList;
 
   $scope.ok = function () {
     $modalInstance.close($scope.element);
@@ -1727,7 +1732,13 @@ angular.module('composerApp').controller('NestedElementInstanceCtrl', function (
   $scope.nestedelement = nestedelement;
   $scope.modelname = modelname;
   $scope.models = models;
-
+  var modelList = []
+  models.forEach(function (model) {
+    modelList.push({name: model.name});
+  });
+  modelList.push({name: 'User'});
+  $scope.models = modelList;
+  
   $scope.ok = function () {
     $modalInstance.close($scope.nestedelement);
   };
