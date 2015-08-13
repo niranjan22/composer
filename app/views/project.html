@@ -81,10 +81,19 @@
                               <input ng-disabled="true" ng-model="submenu.mainmenuname" type="text" class="form-control" id="main-menu-name" placeholder="" />
                             </div>
                             <div class="form-group">
+                              <label for="sub-menu-name">View Name</label>
+                              <select id="sub-menu-view-name" class="form-control"
+                                ng-model="submenu.modelname" 
+                                ng-required="true"
+                                ng-options="view.modelname as view.viewname for view in views | filter:{viewtype:'list'}:true" >
+                                <option value="">Not in list</option>
+                              </select>
+                            </div>
+                            <div ng-hide="submenu.modelname" class="form-group">
                               <label for="sub-menu-name">Sub Menu Name</label>
                               <input ng-model="submenu.submenuname" type="text" class="form-control" id="sub-menu-name" placeholder="" />
-                            </div>                            
-                            <div class="form-group">
+                            </div>
+                            <div ng-hide="submenu.modelname" class="form-group">
                               <label for="sub-menu-label">Sub Menu Label</label>
                               <input ng-model="submenu.submenulabel" type="text" class="form-control" id="sub-menu-label" placeholder="" />
                             </div>
@@ -115,8 +124,8 @@
                                 ng-click="selectSubMenu(submenu, $index)" 
                                 ng-repeat="submenu in selectedMenu.submenus | filter: sm.submenuname">
                               <td>{{ $index+1 }}</td>
-                              <td>{{ submenu.submenuname }}</td>
-                              <td>{{ submenu.submenulabel }}</td>
+                              <td>{{ submenu.submenuname }}{{ submenu.modelname }}</td>
+                              <td>{{ submenu.submenulabel }}{{ submenu.modelname }}</td>
                               <td><a ng-click="editsubmenu(submenu, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
                               <td><a ng-click="removesubmenu($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
@@ -163,17 +172,10 @@
                           </div>
                           <div class="form-group">
                             <label for="method-type">Method</label>
-                            <select multiple id="method-type" class="form-control" size='7'
+                            <select multiple id="method-type" class="form-control" size='5'
                               ng-model="methods" 
                               ng-required="true"
                               ng-options="template for template in templates" />
-<!--                             <select multiple class="form-control" ng-model="method.methodtype" id="method-type">
-                              <option value="create">Create</option>
-                              <option value="edit">Edit</option>
-                              <option value="list">List</option>
-                              <option value="view">View</option>
-                              <option value="other">Other</option>
-                            </select> -->
                           </div>
                         </div>
                         <div class="modal-footer">
@@ -193,7 +195,7 @@
                           </div>
                           <div class="form-group">
                             <label for="view-type">Views</label>
-                            <select multiple id="view-type" class="form-control" size='7'
+                            <select multiple id="view-type" class="form-control" size='4'
                               ng-model="output.views" 
                               ng-required="true" 
                               ng-options="template for template in templates" />
@@ -221,8 +223,8 @@
                               <th>#</th>
                               <th>Models  <a ng-click="searchModel()"><span class="badge">{{ project.models.length }}</span></a></th>
                               <th></th>
-                              <th></th>
-                              <th></th>
+                              <th><a ng-click="createallcontrollers()"><span class="badge">C</span></a></th>
+                              <th><a ng-click="createallviews()"><span class="badge">V</span></a></th>
                               <th><a ng-click="newmodel()"><span class="glyphicon glyphicon-plus"></span></a></th>
                               <th><a ng-click="removeallmodels()"><span class="glyphicon glyphicon-trash"></span></a></th>
                             </tr>
@@ -412,9 +414,9 @@
                           <div class="form-group">
                             <label for="model-name">Model Name</label>
                             <select id="model-name" class="form-control" 
-                              ng-model="controller.modelparampluralname" 
+                              ng-model="controller.modelname" 
                               ng-required="true" 
-                              ng-options="model.parampluralname as model.name for model in models" />
+                              ng-options="model.name as model.name for model in models" />
                           </div>
                         </div>
                         <div class="modal-footer">
@@ -540,9 +542,9 @@
                           <div class="form-group">
                             <label for="service-name">Service Name</label>
                             <select id="service-name" class="form-control" 
-                              ng-model="service.servicename" 
+                              ng-model="service.modelname" 
                               ng-required="true" 
-                              ng-options="model.pluralname as model.name for model in models | filter:{name:'!'+'{{modelname}}'}:true" />
+                              ng-options="model.name as model.name for model in models | filter:{name:'!'+'{{modelname}}'}:true" />
                           </div>
                         </div>
                         <div class="modal-footer">
@@ -648,12 +650,10 @@
                           </div>                        
                           <div class="form-group">
                             <label for="view-type">View Type</label>
-                            <select class="form-control" ng-model="view.viewtype" id="view-type">
-                              <option value="create">Create</option>
-                              <option value="edit">Edit</option>
-                              <option value="list">List</option>
-                              <option value="view">View</option>
-                            </select>
+                            <select id="view-type" class="form-control"
+                              ng-model="view.viewtype" 
+                              ng-required="true" 
+                              ng-options="template for template in templates" />
                           </div>                            
                           <div class="form-group">
                             <label for="model-name">Model Name</label>
@@ -772,7 +772,7 @@
                         </div>
                         <div class="modal-body">
                           <div class="row">
-                            <div class="col-md-3 form-group">
+                            <div class="col-md-2 form-group">
                               <label for="control-name">Control Name</label>
                               <input ng-model="control.controlname" type="text" class="form-control" id="control-name" placeholder="Name" />
                             </div>
@@ -787,30 +787,28 @@
                                 <option value="Nested">Nested</option>
                               </select>
                             </div>
-                            <div class="col-md-4 form-group">
+                            <div class="col-md-3 form-group">
                               <label for="control-label">Control Label</label>
                               <input ng-model="control.controllabel" type="text" class="form-control" id="control-label" placeholder="Display Name" />
                             </div>
-                            <div class="col-md-3 form-group">
+                            <div ng-hide="control.controltype=='Nested'" class="col-md-3 form-group">
                               <label for="example-text">Sample text</label>
                               <input ng-model="control.exampletext" type="text" class="form-control" id="example-text" placeholder="" />
-                            </div>                            
-                          </div>
-                          <div class="row">
-                            <div class="col-md-3 form-group">
-                              <label for="model-element">Model Element</label>
-                              <input ng-model="control.modelelement" type="text" class="form-control" id="model-element" placeholder="" />
-                            </div>                          
+                            </div>              
                             <div class="col-md-2 form-group">
                               <label for="control-width">Width</label>
                               <input ng-model="control.width" type="number" class="form-control" id="control-width" placeholder="2" />
+                            </div>                            
+                            <div class="col-md-3 form-group">
+                              <label for="model-element">Model Element</label>
+                              <input ng-model="control.modelelement" type="text" class="form-control" id="model-element" placeholder="" />
                             </div>                          
                             <div ng-show="control.controltype=='Schema.Types.ObjectId'" class="col-md-7 form-group">
                               <label for="options">options</label>
                               <input ng-model="control.options" type="text" class="form-control" id="options" 
                               placeholder="element.id as element.label for element in collection" />
                             </div>
-                            <div ng-show="viewtype=='edit' && control.controltype!='Schema.Types.ObjectId'" class="col-md-2 form-group">
+                            <div ng-show="viewtype=='edit'" class="col-md-2 form-group">
                               <label for="read-only">Is Read Only</label> 
                               <input ng-model="control.isreadonly" type="checkbox" class="form-control" id="read-only" /> 
                             </div>                 
