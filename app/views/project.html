@@ -13,7 +13,6 @@
                   </tab-heading>
                   <div class="panel-body">
                     <alert ng-repeat="alert in alerts" close="closeAlert($index)">{{alert.msg}}</alert>
-                    
                     <!-- menu starts here -->
                     <div class="col-md-5">
                       <script type="text/ng-template" id="menuContent.html">
@@ -21,24 +20,20 @@
                             <h3 class="modal-title">Menu Details</h3>
                         </div>
                         <div class="modal-body">
-
                           <div class="form-group">
                             <label for="menu-name">Menu Name</label>
                             <input ng-model="menu.menuname" type="text" class="form-control" id="menu-name" placeholder="" />
                           </div>
-                        
                           <div class="form-group">
                             <label for="menu-label">Menu Label</label>
                             <input ng-model="menu.menulabel" type="text" class="form-control" id="menu-label" placeholder="" />
                           </div>
-                          
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-primary" ng-click="ok()">OK</button>
                             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
                         </div>
                       </script>
-                     
                       <div class="table">
                         <table id="tblMenu" class="table">
                           <thead>
@@ -67,7 +62,6 @@
                         </table>
                       </div>
                     </div>
-                    
                     <!-- sub-menu starts here -->
                     <div class="col-md-7">
                       <script type="text/ng-template" id="submenuContent.html">
@@ -75,7 +69,6 @@
                             <h3 class="modal-title">Sub-menu Details</h3>
                         </div>
                         <div class="modal-body">
-
                             <div class="form-group">
                               <label for="main-menu-name">Main Menu Name</label>
                               <input ng-disabled="true" ng-model="submenu.mainmenuname" type="text" class="form-control" id="main-menu-name" placeholder="" />
@@ -97,14 +90,12 @@
                               <label for="sub-menu-label">Sub Menu Label</label>
                               <input ng-model="submenu.submenulabel" type="text" class="form-control" id="sub-menu-label" placeholder="" />
                             </div>
-                            
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-primary" ng-click="ok()">OK</button>
                             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
                         </div>
                       </script>
-
                       <div class="table">
                         <table id="tblSubMenu" class="table">
                           <thead>
@@ -135,15 +126,12 @@
                     </div>                    
                   </div>
                 </tab>
-                
                 <tab>
                   <tab-heading>
                     Models
                   </tab-heading>
                   <div class="panel-body">
-                    
                     <div class="col-md-5">
-
                       <script type="text/ng-template" id="modelContent.html">
                         <div class="modal-header">
                             <h3 class="modal-title">Model Details</h3>
@@ -153,14 +141,12 @@
                             <label for="model-name">Model Name</label>
                             <input ng-model="model.name" type="text" class="form-control"  id="model-name" placeholder="Contact" />
                           </div>
-              
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-primary" ng-click="ok()">OK</button>
                             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
                         </div>
                       </script>
-                      
                       <script type="text/ng-template" id="createController.html">
                         <div class="modal-header">
                             <h3 class="modal-title">Create Controller</h3>
@@ -183,7 +169,6 @@
                             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
                         </div>
                       </script>
-
                       <script type="text/ng-template" id="createViews.html">
                         <div class="modal-header">
                             <h3 class="modal-title">Create Views</h3>
@@ -215,7 +200,6 @@
                             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
                         </div>
                       </script>                      
-
                       <div class="table">
                         <table id="tblModel" class="table">
                           <thead>
@@ -247,9 +231,7 @@
                           </tbody>
                         </table>
                       </div>
-                      
                     </div>
-
                     <div class="col-md-7">
                       <!-- Single button -->
                         <!-- 
@@ -265,7 +247,6 @@
                             <li><a ng-click="removeallelements()">Remove all</a></li>
                           </ul>
                         </div> -->
-
                       <script type="text/ng-template" id="elementContent.html">
                         <div class="modal-header">
                             <h3 class="modal-title">Element Details</h3>
@@ -393,7 +374,6 @@
                   </div>
                 <!-- tab panel body div close-->
                 </tab>
-
                 <tab>
                   <tab-heading>
                     Controllers
@@ -425,7 +405,6 @@
                         </div>
                       </script>
                       <!-- controller popup ends here -->
-                      
                       <!-- controller table starts here -->
                       <div class="table">
                         <table id="tblController" class="table">
@@ -456,7 +435,6 @@
                       </div>
                       <!-- controller table ends here -->                      
                     </div>
-                    
                     <!-- method starts here -->
                     <div class="col-md-2">
                       <!-- method popup starts here -->
@@ -501,7 +479,6 @@
                         </div>
                       </script>
                       <!-- method popup ends here -->
-                      
                       <!-- method table starts here -->
                       <div class="table">
                         <table id="tblMethod" class="table">
@@ -531,7 +508,6 @@
                       <!-- method table ends here -->                      
                     </div>                    
                     <!-- method ends here -->
-                    
                     <!-- service starts -->
                     <div class="col-md-3">
                       <script type="text/ng-template" id="serviceContent.html">
@@ -552,7 +528,6 @@
                             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
                         </div>
                       </script>
-                      
                       <div class="table">
                         <table id="tblService" class="table">
                           <thead>
@@ -575,7 +550,6 @@
                       </div>
                     </div>
                     <!-- service ends -->
-                    
                     <!-- lookup starts -->
                     <div class="col-md-3">
                       <script type="text/ng-template" id="lookupContent.html">
@@ -599,7 +573,6 @@
                             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
                         </div>
                       </script>
-                      
                       <div class="table">
                         <table id="tblLookup" class="table">
                           <thead>
@@ -630,7 +603,6 @@
                   </div>
                   <!-- tab panel body div close-->
                 </tab>
-                
                 <tab>
                   <tab-heading>
                     Views
@@ -662,7 +634,6 @@
                               ng-required="true" 
                               ng-options="model.name as model.name for model in models" />
                           </div>
-                          
                           <div ng-show="view.viewtype=='list'" class="form-group">
                             <label for="menu-name">Main Menu Name</label>
                             <select id="menu-name" class="form-control" 
@@ -679,7 +650,6 @@
                         </div>
                       </script>
                       <!-- view popup ends here -->
-                      
                       <!-- view table starts here -->
                       <div class="table">
                         <table id="tblView" class="table">
@@ -710,7 +680,6 @@
                       </div>
                     </div>
                     <!-- view ends here -->
-
                     <!-- Section starts -->
                     <div class="col-md-3">
                       <script type="text/ng-template" id="sectionContent.html">
@@ -735,7 +704,6 @@
                             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
                         </div>
                       </script>
-                      
                       <div class="table">
                         <table id="tblSection" class="table">
                           <thead>
@@ -763,7 +731,6 @@
                       </div>
                     </div>
                     <!-- Section ends -->
-                    
                     <!-- Control starts -->
                     <div class="col-md-5">
                       <script type="text/ng-template" id="controlContent.html">
@@ -875,25 +842,25 @@
                               <label for="nested-control-label">Control Label</label>
                               <input ng-model="nestedcontrol.controllabel" type="text" class="form-control" id="nested-control-label" />
                             </div>
-                            <div class="col-md-3 form-group">
+                            <div ng-hide="nestedcontrol.controltype=='Select'" class="col-md-3 form-group">
                               <label for="nested-control-example-text">Sample text</label>
                               <input ng-model="nestedcontrol.exampletext" type="text" class="form-control" id="nested-control-example-text" />
                             </div>                            
-                          </div>
-                          <div class="row">
-                            <div class="col-md-3 form-group">
-                              <label for="nested-model-element">Model Element</label>
-                              <input ng-model="nestedcontrol.modelelement" type="text" class="form-control" id="nested-model-element" />
-                            </div>                          
                             <div class="col-md-2 form-group">
                               <label for="nested-control-width">Width</label>
                               <input ng-model="nestedcontrol.width" type="number" class="form-control" id="nested-control-width" />
-                            </div>                          
-                            <div ng-show="nestedcontrol.controltype=='Select'" class="col-md-7 form-group">
-                              <label for="nested-control-options">options</label>
-                              <input ng-model="nestedcontrol.options" type="text" class="form-control" id="nested-control-options" 
-                              placeholder="element.id as element.label for element in collection" />
-                            </div>
+                            </div> 
+                            <div ng-show="nestedcontrol.controltype=='Select'" class="col-md-3 form-group">
+                              <label for="options">Model</label>
+                              <select class="form-control" id="Model" 
+                                      ng-model="nestedcontrol.modelname"
+                                      ng-options= "model.name as model.name for model in models" >
+                                </select>
+                            </div>    
+                            <div class="col-md-3 form-group">
+                              <label for="nested-model-element">Model Element</label>
+                              <input ng-model="nestedcontrol.modelelement" type="text" class="form-control" id="nested-model-element" />
+                            </div>    
                           </div>
                         </div>
                         <div class="modal-footer">
@@ -964,10 +931,8 @@
                       </div>                      
                     </div>
                     <!-- Control starts -->
-                    
                   </div>
                 <!-- tab panel body div close-->
-
                 </tab>
                 <tab>
                   <tab-heading>

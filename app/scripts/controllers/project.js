@@ -1598,6 +1598,9 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
           nestedcontrol: function () {
             var c = {controlname: ''};
             return c;
+          },
+          models: function () {
+            return $scope.project.models;
           }
         }
       });
@@ -1634,6 +1637,9 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                       exampletext : data.exampletext,
                       modelname   : data.modelname};
             return c;
+          },
+          models: function () {
+            return $scope.project.models;
           }
         }
       });
@@ -2002,9 +2008,10 @@ angular.module('composerApp').controller('CopyControlsInstanceCtrl', function ($
 
 });
 
-angular.module('composerApp').controller('NestedControlInstanceCtrl', function ($scope, $modalInstance, nestedcontrol) {
+angular.module('composerApp').controller('NestedControlInstanceCtrl', function ($scope, $modalInstance, nestedcontrol, models) {
 
   $scope.nestedcontrol = nestedcontrol;
+  $scope.models = models;
 
   $scope.ok = function () {
     $modalInstance.close($scope.nestedcontrol);
