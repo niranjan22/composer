@@ -294,9 +294,9 @@
                               </select>
                             </div>
                             <div ng-show="element.elementtype=='Nested'" class="checkbox">
-                                <label>
-                                    <input type="checkbox" ng-model="element.isarray" >Is Array</input>
-                                </label>
+                              <label>
+                                  <input type="checkbox" ng-model="element.isarray" >Is Array</input>
+                              </label>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -781,7 +781,7 @@
                               <select class="form-control" ng-model="control.controltype">
                                 <option value="Text">Text</option>
                                 <option value="Number">Number</option>
-                                <option value="Schema.Types.ObjectId">Object</option>
+                                <option value="Select">Select</option>
                                 <option value="Date">Date</option>
                                 <option value="Boolean">Boolean</option>
                                 <option value="Nested">Nested</option>
@@ -791,27 +791,34 @@
                               <label for="control-label">Control Label</label>
                               <input ng-model="control.controllabel" type="text" class="form-control" id="control-label" placeholder="Display Name" />
                             </div>
-                            <div ng-hide="control.controltype=='Nested'" class="col-md-3 form-group">
+                            <div ng-hide="control.controltype=='Nested' || control.controltype=='Select'" class="col-md-3 form-group">
                               <label for="example-text">Sample text</label>
                               <input ng-model="control.exampletext" type="text" class="form-control" id="example-text" placeholder="" />
-                            </div>              
+                            </div>           
                             <div class="col-md-2 form-group">
                               <label for="control-width">Width</label>
                               <input ng-model="control.width" type="number" class="form-control" id="control-width" placeholder="2" />
                             </div>                            
+                            <div ng-show="control.controltype=='Select'" class="col-md-3 form-group">
+                              <label for="options">Model</label>
+                              <select class="form-control" id="Model" 
+                                      ng-model="control.modelname"
+                                      ng-options= "model.name as model.name for model in models" >
+                                </select>
+                            </div>         
                             <div class="col-md-3 form-group">
                               <label for="model-element">Model Element</label>
                               <input ng-model="control.modelelement" type="text" class="form-control" id="model-element" placeholder="" />
-                            </div>                          
-                            <div ng-show="control.controltype=='Schema.Types.ObjectId'" class="col-md-7 form-group">
-                              <label for="options">options</label>
-                              <input ng-model="control.options" type="text" class="form-control" id="options" 
-                              placeholder="element.id as element.label for element in collection" />
-                            </div>
+                            </div>                            
                             <div ng-show="viewtype=='edit'" class="col-md-2 form-group">
                               <label for="read-only">Is Read Only</label> 
                               <input ng-model="control.isreadonly" type="checkbox" class="form-control" id="read-only" /> 
-                            </div>                 
+                            </div>
+                            <div ng-show="control.controltype=='Nested'" class="col-md-2 form-group">
+                              <label>
+                                  <input type="checkbox" ng-model="control.isarray" class="form-control" >Is Array</input>
+                              </label>
+                            </div>                            
                           </div>
                         </div>
                         <div class="modal-footer">
@@ -859,7 +866,7 @@
                               <select class="form-control" ng-model="nestedcontrol.controltype" id="nested-control-type">
                                 <option value="Text">Text</option>
                                 <option value="Number">Number</option>
-                                <option value="Schema.Types.ObjectId">Object</option>
+                                <option value="Select">Select</option>
                                 <option value="Date">Date</option>
                                 <option value="Boolean">Boolean</option>
                               </select>
@@ -882,7 +889,7 @@
                               <label for="nested-control-width">Width</label>
                               <input ng-model="nestedcontrol.width" type="number" class="form-control" id="nested-control-width" />
                             </div>                          
-                            <div ng-show="nestedcontrol.controltype=='Schema.Types.ObjectId'" class="col-md-7 form-group">
+                            <div ng-show="nestedcontrol.controltype=='Select'" class="col-md-7 form-group">
                               <label for="nested-control-options">options</label>
                               <input ng-model="nestedcontrol.options" type="text" class="form-control" id="nested-control-options" 
                               placeholder="element.id as element.label for element in collection" />

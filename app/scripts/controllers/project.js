@@ -105,10 +105,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
       });
 
       modalInstance.result.then(function (menu) {
-        menu.menuname = menu.menuname.toLowerCase().replace(/ /g, '');
-        menu.menulabel = changeCase.titleCase(menu.menulabel);
         $scope.project.menus.push(menu);
-        $scope.selectedMenu = menu;
         $scope.selectedMenu = menu;
         $scope.selectedMenuIndex = $scope.project.menus.length-1;
       }, function () {
@@ -140,8 +137,6 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
       });
 
       modalInstance.result.then(function (menu) {
-        menu.menuname = menu.menuname.toLowerCase().replace(/ /g, '');
-        menu.menulabel = changeCase.titleCase(menu.menulabel);
         $scope.project.menus[index] = menu;
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
@@ -451,49 +446,55 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
           for(var i = 0; i < data.elements.length; i++) {
             var e = data.elements[i];
             var et = '';
-            if(e.elementtype === 'String'){
-              et = 'Text';
-            }else{
-              et = e.elementtype;
+            switch (e.elementtype) {
+              case 'String'               : et = "Text"; break;
+              case 'Schema.Types.ObjectId': et = "Select"; break;
+              case 'Boolean'              : et = "Checkbox"; break;
+              default                     : et = e.elementtype; break;
             }
             var c = {};
             if(viewtype !== 'list') {
               if(e.elementtype ==='Nested'){
                 c = { controlname : e.elementname,
-                    controltype : et,
-                    width       : 12,
-                    modelelement: e.elementname,
-                    controllabel: changeCase.titleCase(changeCase.sentenceCase(e.elementname)),
-                    nestedcontrols: []};
+                      controltype : et,
+                      width       : 12,
+                      modelelement: e.elementname,
+                      controllabel: changeCase.titleCase(changeCase.sentenceCase(e.elementname)),
+                      isarray     : e.isarray,
+                      nestedcontrols: []};
                 for (var ni = 0; ni < e.elements.length; ni++){
                   var ne = e.elements[ni];
                   var net = '';
-                  if(ne.elementtype === 'String'){
-                    net = 'Text';
-                  }else{
-                    net = ne.elementtype;
+                  switch (ne.elementtype) {
+                    case 'String'               : net = "Text"; break;
+                    case 'Schema.Types.ObjectId': net = "Select"; break;
+                    case 'Boolean'              : net = "Checkbox"; break;
+                    default                     : net = ne.elementtype; break;
                   }
                   var nc = { controlname: ne.elementname,
-                          controltype : net,
-                          width       : 3,
-                          modelelement: ne.elementname,
-                          controllabel: changeCase.titleCase(changeCase.sentenceCase(ne.elementname))};
-                  c.nestedcontrols.push(nc);
+                            controltype : net,
+                            width       : 3,
+                            modelelement: ne.elementname,
+                            modelname   : e.schemaobjref,
+                            controllabel: changeCase.titleCase(changeCase.sentenceCase(ne.elementname))};
+                            c.nestedcontrols.push(nc);
                 }
               } else {
                 c = { controlname : e.elementname,
-                    controltype : et,
-                    width       : 3,
-                    modelelement: e.elementname,
-                    controllabel: changeCase.titleCase(changeCase.sentenceCase(e.elementname))};
+                      controltype : et,
+                      width       : 3,
+                      modelelement: e.elementname,
+                      modelname   : e.schemaobjref,
+                      controllabel: changeCase.titleCase(changeCase.sentenceCase(e.elementname))
+                };
               }
               v.sections[0].controls.push(c);
             } else {
               if ( e.elementtype !== 'Nested'){
                 c = { controlname : e.elementname,
-                    controltype : et,
-                    modelelement: e.elementname,
-                    controllabel: changeCase.titleCase(changeCase.sentenceCase(e.elementname))};
+                      controltype : et,
+                      modelelement: e.elementname,
+                      controllabel: changeCase.titleCase(changeCase.sentenceCase(e.elementname))};
                 v.sections[0].controls.push(c);
               }
             }
@@ -690,9 +691,9 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
         resolve: {
           nestedelement: function () {
             var nestedelement = {elementname: data.elementname,
-                      elementtype: data.elementtype,
+                      elementtype : data.elementtype,
                       schemaobjref: data.schemaobjref,
-                      isarray: data.isarray};
+                      isarray     : data.isarray};
             return nestedelement;
           },
           modelname: function () {
@@ -1047,9 +1048,6 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
         controller: 'ViewInstanceCtrl',
         size: 'sm',
         resolve: {
-          /*project: function () {
-            return $scope.project;
-          }*/
           view: function () {
             var view = {viewname  : '',
                         sections  : [ {controllername: '', sectionsize: 12, controls: [] } ] };
@@ -1083,10 +1081,11 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
         for(var i = 0; i < md.elements.length; i++) {
           var e = md.elements[i];
           var et = '';
-          if(e.elementtype === 'String'){
-            et = 'Text';
-          }else{
-            et = e.elementtype;
+          switch (e.elementtype) {
+            case 'String'               : et = "Text"; break;
+            case 'Schema.Types.ObjectId': et = "Select"; break;
+            case 'Boolean'              : et = "Checkbox"; break;
+            default                     : et = e.elementtype; break;
           }
           var c = {};
           if(e.elementtype ==='Nested'){
@@ -1094,20 +1093,23 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                   controltype : et,
                   width       : 12,
                   modelelement: e.elementname,
+                  isarray     : e.isarray,
                   controllabel: changeCase.titleCase(changeCase.sentenceCase(e.elementname)),
                   nestedcontrols: []};
             for (var ni = 0; ni < e.elements.length; ni++){
               var ne = e.elements[ni];
               var net = '';
-              if(ne.elementtype === 'String'){
-                net = 'Text';
-              }else{
-                net = ne.elementtype;
+              switch (ne.elementtype) {
+                case 'String'               : net = "Text"; break;
+                case 'Schema.Types.ObjectId': net = "Select"; break;
+                case 'Boolean'              : net = "Checkbox"; break;
+                default                     : net = ne.elementtype; break;
               }
               var nc = {controlname   : ne.elementname,
                         controltype   : net,
                         width         : 3,
                         modelelement  : ne.elementname,
+                        modelname     : ne.schemaobjref,
                         controllabel  : changeCase.titleCase(changeCase.sentenceCase(ne.elementname))};
               c.nestedcontrols.push(nc);
             }
@@ -1116,6 +1118,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                 controltype : et,
                 width       : 3,
                 modelelement: e.elementname,
+                modelname   : e.schemaobjref,
                 controllabel: changeCase.titleCase(changeCase.sentenceCase(e.elementname))};
           }
           v.sections[0].controls.push(c);
@@ -1127,7 +1130,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
             }
           })[0];
           var submenu = {mainmenuname : v.menuname,
-                        modelname     : v.modelname};                        
+                        modelname     : v.modelname};
           menu.submenus.push(submenu);
         }
         $scope.project.views.push(v);
@@ -1187,47 +1190,54 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                   sections  : [ {controllername: view.modelname + ' Controller', sectionsize: 12, controls: [] } ] };
 
         var md = $scope.project.models.filter(function (model) {
-                    if (model.name === view.modelname) {
-                      return model;
-                    }
-                  })[0];
+          if (model.name === view.modelname) {
+            return model;
+          }
+        })[0];
         for(var i = 0; i < md.elements.length; i++) {
           var e = md.elements[i];
           var et = '';
-          if(e.elementtype === 'String'){
-            et = 'Text';
-          }else{
-            et = e.elementtype;
+          switch (e.elementtype) {
+            case 'String'               : et = "Text"; break;
+            case 'Schema.Types.ObjectId': et = "Select"; break;
+            case 'Boolean'              : et = "Checkbox"; break;
+            default                     : et = e.elementtype; break;
           }
           var c = {};
           if(e.elementtype ==='Nested'){
             c = { controlname : e.elementname,
-                  controltype : et,
-                  width       : 12,
-                  modelelement: e.elementname,
-                  controllabel: changeCase.titleCase(changeCase.sentenceCase(e.elementname)),
-                  nestedcontrols: []};
+                controltype : et,
+                width       : 12,
+                modelelement: e.elementname,
+                isarray     : e.isarray,
+                controllabel: changeCase.titleCase(changeCase.sentenceCase(e.elementname)),
+                nestedcontrols: []
+            };
             for (var ni = 0; ni < e.elements.length; ni++){
               var ne = e.elements[ni];
               var net = '';
-              if(ne.elementtype === 'String'){
-                net = 'Text';
-              }else{
-                net = ne.elementtype;
-              }
+              switch (ne.elementtype) {
+                case 'String'               : net = "Text"; break;
+                case 'Schema.Types.ObjectId': net = "Select"; break;
+                case 'Boolean'              : net = "Checkbox"; break;
+                default                     : net = ne.elementtype; break;
+              }                  
               var nc = { controlname  : ne.elementname,
                         controltype   : net,
                         width         : 3,
                         modelelement  : ne.elementname,
-                        controllabel: changeCase.titleCase(changeCase.sentenceCase(ne.elementname))};
+                        modelname     : ne.schemaobjref,
+                        controllabel: changeCase.titleCase(changeCase.sentenceCase(ne.elementname))
+              };
               c.nestedcontrols.push(nc);
             }
           } else {
             c = { controlname : e.elementname,
-                  controltype : et,
-                  width       : 3,
-                  modelelement: e.elementname,
-                  controllabel: changeCase.titleCase(changeCase.sentenceCase(e.elementname))};
+            controltype : et,
+            width       : 3,
+            modelelement: e.elementname,
+            modelname   : e.schemaobjref,            
+            controllabel: changeCase.titleCase(changeCase.sentenceCase(e.elementname))};
           }
           v.sections[0].controls.push(c);
         }
@@ -1239,7 +1249,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
             }
           })[0];
           var submenu = {mainmenuname : v.menuname,
-                        modelname     : v.modelname};                        
+                        modelname     : v.modelname};
           menu.submenus.push(submenu);
         }
         $scope.project.views[$scope.selectedViewIndex] = v;
@@ -1377,6 +1387,9 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
             var c = { controlname: '' };
             return c;
           },
+          models: function () {
+            return $scope.project.models;
+          },
           viewtype: function () {
             if ($scope.selectedView) {
               return $scope.selectedView.viewtype;
@@ -1392,6 +1405,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
               controltype   : control.controltype,
               width         : control.width,
               modelelement  : control.modelelement,
+              isarray       : control.isarray,
               controllabel  : control.controllabel,
               isreadonly    : control.isreadonly,
               nestedcontrols: control.nestedcontrols};
@@ -1403,7 +1417,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
               controllabel  : control.controllabel,
               isreadonly    : control.isreadonly,
               exampletext   : control.exampletext,
-              options       : control.options};
+              modelname     : control.modelname};
         }
         $scope.selectedSection.controls.push(c);
         $scope.selectedControl = control;
@@ -1436,9 +1450,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                   width         : data.width,
                   modelelement  : data.modelelement,
                   controllabel  : data.controllabel,
-                  exampletext   : data.exampletext,
-                  options       : data.options,
-                  isreadonly    : data.isreadonly,
+                  isarray       : data.isarray,
                   nestedcontrols: data.nestedcontrols};
             } else {
               c = {controlname  : data.controlname,
@@ -1447,10 +1459,13 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                   modelelement  : data.modelelement,
                   controllabel  : data.controllabel,
                   exampletext   : data.exampletext,
-                  options       : data.options,
+                  modelname     : data.modelname,
                   isreadonly    : data.isreadonly};
             }
             return c;
+          },
+          models: function () {
+            return $scope.project.models;
           },
           viewtype: function () {
             return $scope.selectedView.viewtype;
@@ -1467,7 +1482,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                 width         : control.width,
                 modelelement  : control.modelelement,
                 controllabel  : control.controllabel,
-                isreadonly    : control.isreadonly,
+                isarray       : control.isarray,
                 nestedcontrols: control.nestedcontrols};
           } else {
             c = {controlname  : control.controlname,
@@ -1475,6 +1490,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                 width         : control.width,
                 modelelement  : control.modelelement,
                 controllabel  : control.controllabel,
+                isarray       : control.isarray,
                 isreadonly    : control.isreadonly};
           }
         } else {
@@ -1485,7 +1501,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
               controllabel  : control.controllabel,
               isreadonly    : control.isreadonly,
               exampletext   : control.exampletext,
-              options       : control.options};
+              modelname     : control.modelname};
         }
         $scope.selectedSection.controls[index] = c;
       }, function () {
@@ -1531,8 +1547,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                         width       : control.width,
                         modelelement: control.modelelement,
                         controllabel: control.controllabel,
-                        exampletext : control.exampletext,
-                        options     : control.options,
+                        isarray     : control.isarray,
                         nestedcontrols: []};
               for (var ni = 0; ni < control.nestedcontrols.length; ni++) {
                 var nestedcontrol = control.nestedcontrols[ni];
@@ -1542,7 +1557,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                             modelelement: nestedcontrol.modelelement,
                             controllabel: nestedcontrol.controllabel,
                             exampletext : nestedcontrol.exampletext,
-                            options     : nestedcontrol.options};
+                            modelname   : nestedcontrol.modelname};
                 c.nestedcontrols.push(nc);
               }
             } else {
@@ -1552,7 +1567,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                         modelelement: control.modelelement,
                         controllabel: control.controllabel,
                         exampletext : control.exampletext,
-                        options     : control.optionsss};
+                        modelname   : control.modelname};
             }
             controls.push(c);
           }
@@ -1617,7 +1632,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                       modelelement: data.modelelement,
                       controllabel: data.controllabel,
                       exampletext : data.exampletext,
-                      options     : data.options};
+                      modelname   : data.modelname};
             return c;
           }
         }
@@ -1957,9 +1972,10 @@ angular.module('composerApp').controller('SectionInstanceCtrl', function ($scope
 
 });
 
-angular.module('composerApp').controller('ControlInstanceCtrl', function ($scope, $modalInstance, control, viewtype) {
+angular.module('composerApp').controller('ControlInstanceCtrl', function ($scope, $modalInstance, control, models, viewtype) {
 
   $scope.control  = control;
+  $scope.models = models;
   $scope.viewtype = viewtype;
 
   $scope.ok = function () {
