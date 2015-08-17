@@ -475,7 +475,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                             controltype : net,
                             width       : 3,
                             modelelement: ne.elementname,
-                            modelname   : e.schemaobjref,
+                            modelname   : ne.schemaobjref,
                             controllabel: changeCase.titleCase(changeCase.sentenceCase(ne.elementname))};
                             c.nestedcontrols.push(nc);
                 }
