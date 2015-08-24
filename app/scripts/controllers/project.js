@@ -306,6 +306,25 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
       $scope.selectedElement = null;
       $scope.selectedElementIndex = null;
     };
+    
+    $scope.moveModelUp = function (index){
+      $scope.project.models.move(index, index-1);
+    };
+
+    $scope.moveModelDown = function (index){
+      $scope.project.models.move(index, index+1);
+    };
+    $scope.moveElementUp = function (index){
+      $scope.selectedModel.elements.move(index, index-1);
+    };
+
+    $scope.moveElementDown = function (index){
+      $scope.selectedModel.elements.move(index, index+1);
+    };
+    
+    Array.prototype.move = function(from, to) {
+      this.splice(to, 0, this.splice(from, 1)[0]);
+    };
 
     $scope.editmodel = function (data, index) {
       $scope.selectedModelIndex = index;

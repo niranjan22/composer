@@ -225,7 +225,10 @@
                               <td><span class="badge">{{ model.elements.length }}</span></td>
                               <td><a ng-click="createcontroller(model)"><span class="badge">C</span></a></td>
                               <td><a ng-click="createviews(model)"><span class="badge">V</span></a></td>
-                              <td><a ng-click="editmodel(model, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
+                              <td><a ng-click="editmodel(model, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                              <a ng-click="moveModelUp($index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                              <a ng-click="moveModelDown($index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                              
+                              </td>
                               <td><a ng-click="removemodel($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
@@ -306,7 +309,10 @@
                               <td>{{ $index+1 }}</td>
                               <td>{{ element.elementname }}</td>
                               <td>{{ element.elementtype }}</td>
-                              <td><a ng-click="editelement(element, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
+                              <td><a ng-click="editelement(element, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                              <a ng-click="moveElementUp($index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                              <a ng-click="moveElementDown($index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                   
+                              </td>
                               <td><a ng-click="removeelement($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
