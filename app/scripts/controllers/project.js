@@ -1925,7 +1925,12 @@ angular.module('composerApp').controller('ServiceInstanceCtrl', function ($scope
 
   $scope.service = service;
   $scope.modelname = modelname;
-  $scope.models = models;
+  var modelList = [];
+  models.forEach(function (model) {
+    modelList.push({name: model.name});
+  });
+  modelList.push({name: 'User'});
+  $scope.models = modelList;
 
   $scope.ok = function () {
     $modalInstance.close($scope.service);
@@ -1969,7 +1974,13 @@ angular.module('composerApp').controller('ViewInstanceCtrl', function ($scope, $
 
   $scope.view       = view;
   $scope.templates  = templates;
-  $scope.models     = models;
+  var modelList = [];
+  models.forEach(function (model) {
+    modelList.push({name: model.name});
+  });
+  modelList.push({name: 'User'});
+  $scope.models = modelList;  
+  
   $scope.menus      = menus;
 
   $scope.ok = function () {
@@ -2000,7 +2011,14 @@ angular.module('composerApp').controller('SectionInstanceCtrl', function ($scope
 angular.module('composerApp').controller('ControlInstanceCtrl', function ($scope, $modalInstance, control, models, viewtype) {
 
   $scope.control  = control;
-  $scope.models = models;
+
+  var modelList = [];
+  models.forEach(function (model) {
+    modelList.push({name: model.name});
+  });
+  modelList.push({name: 'User'});
+  $scope.models = modelList;
+  
   $scope.viewtype = viewtype;
 
   $scope.ok = function () {
@@ -2030,7 +2048,12 @@ angular.module('composerApp').controller('CopyControlsInstanceCtrl', function ($
 angular.module('composerApp').controller('NestedControlInstanceCtrl', function ($scope, $modalInstance, nestedcontrol, models) {
 
   $scope.nestedcontrol = nestedcontrol;
-  $scope.models = models;
+  var modelList = [];
+  models.forEach(function (model) {
+    modelList.push({name: model.name});
+  });
+  modelList.push({name: 'User'});
+  $scope.models = modelList;  
 
   $scope.ok = function () {
     $modalInstance.close($scope.nestedcontrol);
