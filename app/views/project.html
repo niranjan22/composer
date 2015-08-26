@@ -370,7 +370,10 @@
                               <td>{{ selectedElementIndex + 1 }}.{{ $index+1 }}</td>
                               <td>{{ nestedelement.elementname }}</td>
                               <td>{{ nestedelement.elementtype }}</td>
-                              <td><a ng-click="editnestedelement(nestedelement, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
+                              <td><a ng-click="editnestedelement(nestedelement, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                              <a ng-click="moveNestedElementUp($index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                              <a ng-click="moveNestedElementDown($index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                  
+                              </td>
                               <td><a ng-click="removenestedelement($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>

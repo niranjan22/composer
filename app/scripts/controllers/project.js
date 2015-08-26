@@ -322,6 +322,14 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
       $scope.selectedModel.elements.move(index, index+1);
     };
     
+    $scope.moveNestedElementUp = function (index){
+      $scope.selectedElement.elements.move(index, index-1);
+    };
+
+    $scope.moveNestedElementDown = function (index){
+      $scope.selectedElement.elements.move(index, index+1);
+    };    
+    
     Array.prototype.move = function(from, to) {
       this.splice(to, 0, this.splice(from, 1)[0]);
     };
