@@ -226,8 +226,8 @@
                               <td><a ng-click="createcontroller(model)"><span class="badge">C</span></a></td>
                               <td><a ng-click="createviews(model)"><span class="badge">V</span></a></td>
                               <td><a ng-click="editmodel(model, $index)"><span class="glyphicon glyphicon-edit"></span></a>
-                              <a ng-click="moveModelUp($index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveModelDown($index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                              
+                              <a ng-click="moveUp(project.models, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                              <a ng-click="moveDown(project.models, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                              
                               </td>
                               <td><a ng-click="removemodel($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
@@ -295,7 +295,9 @@
                               <th>#</th>
                               <th>Elements <a ng-click="searchElement()"><span class="badge">{{ selectedModel.elements.length }}</span></a></th>
                               <th>Type</th>
-                              <th><a ng-click="newelement()"><span class="glyphicon glyphicon-plus"></span></a></th>
+                              <th><a ng-click="newelement()"><span class="glyphicon glyphicon-plus"></span></a>
+                              <a ng-csv="exportElements()" filename="{{selectedModel.name}}.csv"><span class="glyphicon glyphicon-export"></span></a>
+                              </th>
                               <th><a ng-click="removeallelements()"><span class="glyphicon glyphicon-trash"></span></a></th>
                             </tr>
                             <tr ng-show="searchElementFlag">
@@ -310,8 +312,8 @@
                               <td>{{ element.elementname }}</td>
                               <td>{{ element.elementtype }}</td>
                               <td><a ng-click="editelement(element, $index)"><span class="glyphicon glyphicon-edit"></span></a>
-                              <a ng-click="moveElementUp($index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveElementDown($index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                   
+                              <a ng-click="moveUp(selectedModel.elements, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                              <a ng-click="moveDown(selectedModel.elements, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                   
                               </td>
                               <td><a ng-click="removeelement($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
@@ -371,8 +373,8 @@
                               <td>{{ nestedelement.elementname }}</td>
                               <td>{{ nestedelement.elementtype }}</td>
                               <td><a ng-click="editnestedelement(nestedelement, $index)"><span class="glyphicon glyphicon-edit"></span></a>
-                              <a ng-click="moveNestedElementUp($index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveNestedElementDown($index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                  
+                              <a ng-click="moveUp(selectedElement.elements, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                              <a ng-click="moveDown(selectedElement.elements, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                  
                               </td>
                               <td><a ng-click="removenestedelement($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
@@ -436,7 +438,10 @@
                               <td>{{ $index+1 }}</td>
                               <td>{{ controller.controllername }}</td>
                               <td><span class="badge">{{ controller.methods.length }}</span></td>
-                              <td><a ng-click="editcontroller(controller, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
+                              <td><a ng-click="editcontroller(controller, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                              <a ng-click="moveUp(project.controllers, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                              <a ng-click="moveDown(project.controllers, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                
+                              </td>
                               <td><a ng-click="removecontroller($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
@@ -601,7 +606,10 @@
                                 ng-repeat="lookup in selectedController.lookups | filter: l.lookupname">
                               <td>{{ $index+1 }}</td>
                               <td>{{ lookup.lookupname }}</td>
-                              <td><a ng-click="editlookup(lookup, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
+                              <td><a ng-click="editlookup(lookup, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                              <a ng-click="moveUp(selectedController.lookups, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                              <a ng-click="moveDown(selectedController.lookups, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                   
+                              </td>
                               <td><a ng-click="removelookup($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
@@ -681,7 +689,10 @@
                               <td>{{ $index+1 }}</td>
                               <td>{{ view.viewname }}</td>
                               <td><span class="badge">{{ view.sections.length }}</span></td>
-                              <td><a ng-click="editview(view, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
+                              <td><a ng-click="editview(view, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                              <a ng-click="moveUp(project.views, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                              <a ng-click="moveDown(project.views, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                                              
+                              </td>
                               <td><a ng-click="removeview($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
@@ -903,7 +914,10 @@
                               <td>{{ $index+1 }}</td>
                               <td>{{ control.controllabel }}</td>
                               <td>{{ control.controltype }}</td>
-                              <td><a ng-click="editcontrol(control, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
+                              <td><a ng-click="editcontrol(control, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                              <a ng-click="moveUp(selectedSection.controls, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                              <a ng-click="moveDown(selectedSection.controls, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                                              
+                              </td>
                               <td><a ng-click="removecontrol($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
@@ -932,7 +946,10 @@
                               <td>{{ $index+1 }}</td>
                               <td>{{ nestedcontrol.controllabel }}</td>
                               <td>{{ nestedcontrol.controltype }}</td>
-                              <td><a ng-click="editnestedcontrol(nestedcontrol, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
+                              <td><a ng-click="editnestedcontrol(nestedcontrol, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                              <a ng-click="moveUp(selectedControl.nestedcontrols, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                              <a ng-click="moveDown(selectedControl.nestedcontrols, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                 
+                              </td>
                               <td><a ng-click="removenestedcontrol($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
