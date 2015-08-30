@@ -379,7 +379,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
             return data;
           },
           templates: function () {
-            var t = ['create','remove','update','find','findOne'];
+            var t = ['create','remove','update','find','findOne', 'standAlone', 'Modal'];
             return t;
           },
           methods: function () {
@@ -749,19 +749,34 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
         resolve: {
           controller: function () {
             var controller = {controllername: '',
-                              modelname: ''};
+                              modelname: '',
+                              methods: ['create','remove','update','find','findOne']};
             return controller;
           },
           models: function () {
             return $scope.project.models;
+          },
+          templates: function () {
+            var t = ['create','remove','update','find','findOne', 'Modal', 'standAlone'];
+            return t;
           }
         }
       });
-
+      
       modalInstance.result.then(function (data) {
+        
+        var methods = [];
+        data.methods.forEach( function (method) {
+          if (method === 'create' || method === 'remove' || method === 'update' || method === 'find' || method === 'findOne' || method === 'standAlone'){
+            methods.push({methodname: method, methodtype: method});
+          } else {
+            methods.push({methodname: method, methodtype: 'Modal'});
+          }
+        });
+                            
         var ct = {controllername: data.controllername,
                   modelname: data.modelname,
-                  methods: [],
+                  methods: methods,
                   services: [],
                   lookups: []};
         $scope.project.controllers.push(ct);
@@ -802,6 +817,10 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
           },
           models: function () {
             return $scope.project.models;
+          },
+          templates: function () {
+            var t = [];
+            return t;
           }
         }
       });
@@ -1901,11 +1920,29 @@ angular.module('composerApp').controller('NestedElementInstanceCtrl', function (
 
 });
 
-angular.module('composerApp').controller('ControllerInstanceCtrl', function ($scope, $modalInstance, controller, models) {
+angular.module('composerApp').controller('ControllerInstanceCtrl', function ($scope, $modalInstance, controller, models, templates) {
 
   $scope.controller = controller;
   $scope.models = models;
+  $scope.templates = templates;
 
+  $scope.fetchTemplateslist = function () {
+   
+    var model = $scope.models.filter( function (model) {
+      if(model.name === $scope.controller.modelname) {
+        return model;
+      }
+    })[0];
+   
+    $scope.templates = ['create','remove','update','find','findOne','standAlone'];
+    model.elements.reduce( function (template, element) {
+      if (element.elementtype === 'Nested') {
+        $scope.templates.push(element.elementname);
+      }
+    });
+    
+  };
+      
   $scope.ok = function () {
     $modalInstance.close($scope.controller);
   };

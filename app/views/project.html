@@ -2,7 +2,7 @@
   <div ng-controller="ProjectCtrl">
     <form>
       <fieldset>
-        <div class="row"> 
+        <div class="row">
           <div class="col-md-12">
             <toaster-container toaster-options="{'position-class': 'toast-top-right'}"></toaster-container>
             <div class="tabs-container">
@@ -49,13 +49,16 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <tr ng-class="{'selected':$index == selectedMenuIndex}" 
-                                ng-click="selectMenu(menu, $index)" 
+                            <tr ng-class="{'selected':$index == selectedMenuIndex}"
+                                ng-click="selectMenu(menu, $index)"
                                 ng-repeat="menu in project.menus | filter: m.menuname">
                               <td>{{ $index+1 }}</td>
                               <td>{{ menu.menulabel }}</td>
                               <td><span class="badge">{{ menu.submenus.length }}</span></td>
-                              <td><a ng-click="editmenu(menu, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
+                              <td><a ng-click="editmenu(menu, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                              <a ng-click="moveUp(project.menus, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                              <a ng-click="moveDown(project.menus, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                              </td>
                               <td><a ng-click="removemenu($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
@@ -76,7 +79,7 @@
                             <div class="form-group">
                               <label for="sub-menu-name">View Name</label>
                               <select id="sub-menu-view-name" class="form-control"
-                                ng-model="submenu.modelname" 
+                                ng-model="submenu.modelname"
                                 ng-required="true"
                                 ng-options="view.modelname as view.viewname for view in views | filter:{viewtype:'list'}:true" >
                                 <option value="">Not in list</option>
@@ -111,19 +114,22 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <tr ng-class="{'selected':$index == selectedSubMenuIndex}" 
-                                ng-click="selectSubMenu(submenu, $index)" 
+                            <tr ng-class="{'selected':$index == selectedSubMenuIndex}"
+                                ng-click="selectSubMenu(submenu, $index)"
                                 ng-repeat="submenu in selectedMenu.submenus | filter: sm.submenuname">
                               <td>{{ $index+1 }}</td>
                               <td>{{ submenu.submenuname }}{{ submenu.modelname }}</td>
                               <td>{{ submenu.submenulabel }}{{ submenu.modelname }}</td>
-                              <td><a ng-click="editsubmenu(submenu, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
+                              <td><a ng-click="editsubmenu(submenu, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                              <a ng-click="moveUp(selectedMenu.submenus, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                              <a ng-click="moveDown(selectedMenu.submenus, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                              </td>
                               <td><a ng-click="removesubmenu($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
                         </table>
                       </div>
-                    </div>                    
+                    </div>
                   </div>
                 </tab>
                 <tab>
@@ -159,7 +165,7 @@
                           <div class="form-group">
                             <label for="method-type">Method</label>
                             <select multiple id="method-type" class="form-control" size='5'
-                              ng-model="methods" 
+                              ng-model="methods"
                               ng-required="true"
                               ng-options="template for template in templates" />
                           </div>
@@ -181,25 +187,25 @@
                           <div class="form-group">
                             <label for="view-type">Views</label>
                             <select multiple id="view-type" class="form-control" size='4'
-                              ng-model="output.views" 
-                              ng-required="true" 
+                              ng-model="output.views"
+                              ng-required="true"
                               ng-options="template for template in templates" />
                           </div>
                           <div ng-show="output.views.indexOf('list') > -1" class="form-group">
                             <label for="menu-name">Main Menu Name</label>
-                            <select id="menu-name" class="form-control" 
-                              ng-model="output.menuname" 
-                              ng-required="true" 
+                            <select id="menu-name" class="form-control"
+                              ng-model="output.menuname"
+                              ng-required="true"
                               ng-options="menu.menuname as menu.menuname for menu in menus">
                               <option value="">No Menu</option>
                             </select>
-                          </div>                          
+                          </div>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-primary" ng-click="ok()">OK</button>
                             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
                         </div>
-                      </script>                      
+                      </script>
                       <div class="table">
                         <table id="tblModel" class="table">
                           <thead>
@@ -217,8 +223,8 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <tr ng-class="{'selected':$index == selectedModelIndex}" 
-                                ng-click="selectModel(model, $index)" 
+                            <tr ng-class="{'selected':$index == selectedModelIndex}"
+                                ng-click="selectModel(model, $index)"
                                 ng-repeat="model in project.models | filter: q.name">
                               <td>{{ $index+1 }}</td>
                               <td>{{ model.name }}</td>
@@ -227,7 +233,7 @@
                               <td><a ng-click="createviews(model)"><span class="badge">V</span></a></td>
                               <td><a ng-click="editmodel(model, $index)"><span class="glyphicon glyphicon-edit"></span></a>
                               <a ng-click="moveUp(project.models, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(project.models, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                              
+                              <a ng-click="moveDown(project.models, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
                               </td>
                               <td><a ng-click="removemodel($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
@@ -237,7 +243,7 @@
                     </div>
                     <div class="col-md-7">
                       <!-- Single button -->
-                        <!-- 
+                        <!--
                         <div class="btn-group">
                           <button type="button" class="btn btn-primary">Action</button>
                           <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -273,7 +279,7 @@
                             </div>
                             <div ng-show="element.elementtype=='Schema.Types.ObjectId'" class="form-group">
                               <label for="element-schema-object-ref">Schema Object Ref</label>
-                              <select class="form-control" id="element-schema-object-ref" ng-model="element.schemaobjref" 
+                              <select class="form-control" id="element-schema-object-ref" ng-model="element.schemaobjref"
                               ng-options= "model.name as model.name for model in models | filter:'!{{ modelname }}':true" >
                               </select>
                             </div>
@@ -287,7 +293,7 @@
                             <button class="btn btn-primary" ng-click="ok()">OK</button>
                             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
                         </div>
-                      </script>            
+                      </script>
                       <div class="table-responsive">
                         <table id="tblElement" class="table">
                           <thead>
@@ -302,18 +308,18 @@
                             </tr>
                             <tr ng-show="searchElementFlag">
                               <th colspan="5"><input class="form-control" ng-model="e.elementname" /></th>
-                            </tr>                            
+                            </tr>
                           </thead>
                           <tbody>
-                            <tr ng-class="{'selected':$index == selectedElementIndex}" 
-                                ng-click="selectElement(element, $index)" 
+                            <tr ng-class="{'selected':$index == selectedElementIndex}"
+                                ng-click="selectElement(element, $index)"
                                 ng-repeat="element in selectedModel.elements | filter: e.elementname">
                               <td>{{ $index+1 }}</td>
                               <td>{{ element.elementname }}</td>
                               <td>{{ element.elementtype }}</td>
                               <td><a ng-click="editelement(element, $index)"><span class="glyphicon glyphicon-edit"></span></a>
                               <a ng-click="moveUp(selectedModel.elements, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(selectedModel.elements, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                   
+                              <a ng-click="moveDown(selectedModel.elements, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
                               </td>
                               <td><a ng-click="removeelement($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
@@ -342,7 +348,7 @@
                             </div>
                             <div ng-show="nestedelement.elementtype=='Schema.Types.ObjectId'" class="form-group">
                               <label for="nested-element-schema-object-ref">Schema Object Ref</label>
-                              <select class="form-control" id="nested-element-schema-object-ref" ng-model="nestedelement.schemaobjref" 
+                              <select class="form-control" id="nested-element-schema-object-ref" ng-model="nestedelement.schemaobjref"
                               ng-options= "model.name as model.name for model in models | filter:'!{{ modelname }}':true" />
                             </div>
                         </div>
@@ -350,7 +356,7 @@
                             <button class="btn btn-primary" ng-click="ok()">OK</button>
                             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
                         </div>
-                      </script>            
+                      </script>
                       <div ng-show="selectedElement.elementtype=='Nested'" class="table-responsive">
                         <table id="tblNestedElement" class="table">
                           <thead>
@@ -363,24 +369,24 @@
                             </tr>
                             <tr ng-show="searchNestedElementFlag">
                               <th colspan="5"><input class="form-control" ng-model="ne.elementname" /></th>
-                            </tr>                            
+                            </tr>
                           </thead>
                           <tbody>
-                            <tr ng-class="{'selected':$index == selectedNestedElementIndex}" 
-                                ng-click="selectNestedElement(nestedelement, $index)" 
+                            <tr ng-class="{'selected':$index == selectedNestedElementIndex}"
+                                ng-click="selectNestedElement(nestedelement, $index)"
                                 ng-repeat="nestedelement in selectedElement.elements | filter: ne.elementname">
                               <td>{{ selectedElementIndex + 1 }}.{{ $index+1 }}</td>
                               <td>{{ nestedelement.elementname }}</td>
                               <td>{{ nestedelement.elementtype }}</td>
                               <td><a ng-click="editnestedelement(nestedelement, $index)"><span class="glyphicon glyphicon-edit"></span></a>
                               <a ng-click="moveUp(selectedElement.elements, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(selectedElement.elements, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                  
+                              <a ng-click="moveDown(selectedElement.elements, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
                               </td>
                               <td><a ng-click="removenestedelement($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
                         </table>
-                      </div>                      
+                      </div>
                     </div>
                   </div>
                 <!-- tab panel body div close-->
@@ -401,14 +407,22 @@
                           <div class="form-group">
                             <label for="controller-name">Controller Name</label>
                             <input ng-model="controller.controllername" type="text" class="form-control" id="controller-name" placeholder="" />
-                          </div>                        
+                          </div>
                           <div class="form-group">
                             <label for="model-name">Model Name</label>
-                            <select id="model-name" class="form-control" 
-                              ng-model="controller.modelname" 
-                              ng-required="true" 
+                            <select id="model-name" class="form-control"
+                              ng-model="controller.modelname"
+                              ng-change="fetchTemplateslist()" 
+                              ng-required="true"
                               ng-options="model.name as model.name for model in models" />
                           </div>
+                          <div ng-hide="templates.length===0" class="form-group">
+                            <label for="method-type">Method</label>
+                            <select multiple id="method-type" class="form-control" size='5'
+                              ng-model="controller.methods"
+                              ng-required="true"
+                              ng-options="template for template in templates" />
+                          </div>                          
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-primary" ng-click="ok()">OK</button>
@@ -432,22 +446,22 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <tr ng-class="{'selected':$index == selectedControllerIndex}" 
-                                ng-click="selectController(controller, $index)" 
+                            <tr ng-class="{'selected':$index == selectedControllerIndex}"
+                                ng-click="selectController(controller, $index)"
                                 ng-repeat="controller in project.controllers | filter: ct.controllername">
                               <td>{{ $index+1 }}</td>
                               <td>{{ controller.controllername }}</td>
                               <td><span class="badge">{{ controller.methods.length }}</span></td>
                               <td><a ng-click="editcontroller(controller, $index)"><span class="glyphicon glyphicon-edit"></span></a>
                               <a ng-click="moveUp(project.controllers, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(project.controllers, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                
+                              <a ng-click="moveDown(project.controllers, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
                               </td>
                               <td><a ng-click="removecontroller($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
                         </table>
                       </div>
-                      <!-- controller table ends here -->                      
+                      <!-- controller table ends here -->
                     </div>
                     <!-- method starts here -->
                     <div class="col-md-2">
@@ -473,12 +487,13 @@
                                   <option value="update">update</option>
                                   <option value="find">find</option>
                                   <option value="findOne">findOne</option>
-                                  <option value="other">Other</option>
+                                  <option value="standAlone">standAlone</option>
+                                  <option value="Modal">Modal</option>
                                 </select>
                               </div>
                             </div>
                           </div>
-                          <div ng-show="method.methodtype=='other'" class="row">
+                          <div ng-show="method.methodtype === 'Modal' || method.methodtype ==='standAlone'" class="row">
                             <div class="col-md-12">
                               <div class="form-group">
                                 <label for="method-content">Method Content</label>
@@ -508,8 +523,8 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <tr ng-class="{'selected':$index == selectedMethodIndex}" 
-                                ng-click="selectMethod(method, $index)" 
+                            <tr ng-class="{'selected':$index == selectedMethodIndex}"
+                                ng-click="selectMethod(method, $index)"
                                 ng-repeat="method in selectedController.methods | filter: md.methodname">
                               <td>{{ $index+1 }}</td>
                               <td>{{ method.methodname }}</td>
@@ -519,8 +534,8 @@
                           </tbody>
                         </table>
                       </div>
-                      <!-- method table ends here -->                      
-                    </div>                    
+                      <!-- method table ends here -->
+                    </div>
                     <!-- method ends here -->
                     <!-- service starts -->
                     <div class="col-md-3">
@@ -531,9 +546,9 @@
                         <div class="modal-body">
                           <div class="form-group">
                             <label for="service-name">Service Name</label>
-                            <select id="service-name" class="form-control" 
-                              ng-model="service.modelname" 
-                              ng-required="true" 
+                            <select id="service-name" class="form-control"
+                              ng-model="service.modelname"
+                              ng-required="true"
                               ng-options="model.name as model.name for model in models | filter:{name:'!'+'{{modelname}}'}:true" />
                           </div>
                         </div>
@@ -552,8 +567,8 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <tr ng-class="{'selected':$index == selectedServiceIndex}" 
-                                ng-click="selectService(service, $index)" 
+                            <tr ng-class="{'selected':$index == selectedServiceIndex}"
+                                ng-click="selectService(service, $index)"
                                 ng-repeat="service in selectedController.services track by $index">
                               <td>{{ $index+1 }}</td>
                               <td>{{ service }}</td>
@@ -598,17 +613,17 @@
                             </tr>
                             <tr ng-show="searchLookupFlag">
                               <th colspan="4"><input class="form-control" ng-model="l.lookupname" /></th>
-                            </tr>                            
+                            </tr>
                           </thead>
                           <tbody>
-                            <tr ng-class="{'selected':$index == selectedLookupIndex}" 
-                                ng-click="selectLookup(lookup, $index)" 
+                            <tr ng-class="{'selected':$index == selectedLookupIndex}"
+                                ng-click="selectLookup(lookup, $index)"
                                 ng-repeat="lookup in selectedController.lookups | filter: l.lookupname">
                               <td>{{ $index+1 }}</td>
                               <td>{{ lookup.lookupname }}</td>
                               <td><a ng-click="editlookup(lookup, $index)"><span class="glyphicon glyphicon-edit"></span></a>
                               <a ng-click="moveUp(selectedController.lookups, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(selectedController.lookups, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                   
+                              <a ng-click="moveDown(selectedController.lookups, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
                               </td>
                               <td><a ng-click="removelookup($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
@@ -616,7 +631,7 @@
                         </table>
                       </div>
                     </div>
-                    <!-- lookup ends -->                    
+                    <!-- lookup ends -->
                   </div>
                   <!-- tab panel body div close-->
                 </tab>
@@ -636,30 +651,30 @@
                           <div class="form-group">
                             <label for="view-name">View Name</label>
                             <input ng-model="view.viewname" type="text" class="form-control" id="view-name" placeholder="" />
-                          </div>                        
+                          </div>
                           <div class="form-group">
                             <label for="view-type">View Type</label>
                             <select id="view-type" class="form-control"
-                              ng-model="view.viewtype" 
-                              ng-required="true" 
+                              ng-model="view.viewtype"
+                              ng-required="true"
                               ng-options="template for template in templates" />
-                          </div>                            
+                          </div>
                           <div class="form-group">
                             <label for="model-name">Model Name</label>
-                            <select id="model-name" class="form-control" 
-                              ng-model="view.modelname" 
-                              ng-required="true" 
+                            <select id="model-name" class="form-control"
+                              ng-model="view.modelname"
+                              ng-required="true"
                               ng-options="model.name as model.name for model in models" />
                           </div>
                           <div ng-show="view.viewtype=='list'" class="form-group">
                             <label for="menu-name">Main Menu Name</label>
-                            <select id="menu-name" class="form-control" 
-                              ng-model="view.menuname" 
-                              ng-required="true" 
+                            <select id="menu-name" class="form-control"
+                              ng-model="view.menuname"
+                              ng-required="true"
                               ng-options="menu.menuname as menu.menuname for menu in menus">
                               <option value="">No Menu</option>
                             </select>
-                          </div>                          
+                          </div>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-primary" ng-click="ok()">OK</button>
@@ -683,15 +698,15 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <tr ng-class="{'selected':$index == selectedViewIndex}" 
-                                ng-click="selectView(view, $index)" 
+                            <tr ng-class="{'selected':$index == selectedViewIndex}"
+                                ng-click="selectView(view, $index)"
                                 ng-repeat="view in project.views | filter: v.viewname">
                               <td>{{ $index+1 }}</td>
                               <td>{{ view.viewname }}</td>
                               <td><span class="badge">{{ view.sections.length }}</span></td>
                               <td><a ng-click="editview(view, $index)"><span class="glyphicon glyphicon-edit"></span></a>
                               <a ng-click="moveUp(project.views, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(project.views, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                                              
+                              <a ng-click="moveDown(project.views, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
                               </td>
                               <td><a ng-click="removeview($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
@@ -709,15 +724,15 @@
                         <div class="modal-body">
                           <div class="form-group">
                             <label for="section-name">Controller Name</label>
-                            <select id="section-name" class="form-control" 
-                              ng-model="section.controllername" 
-                              ng-required="true" 
+                            <select id="section-name" class="form-control"
+                              ng-model="section.controllername"
+                              ng-required="true"
                               ng-options="controller.controllername as controller.controllername for controller in controllers" />
                           </div>
                           <div class="form-group">
                             <label for="section-size">Size</label>
                             <input ng-model="section.sectionsize" min="1" max="12" type="number" class="form-control" id="section-size" placeholder="12" />
-                          </div>                             
+                          </div>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-primary" ng-click="ok()">OK</button>
@@ -738,8 +753,8 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <tr ng-class="{'selected':$index == selectedSectionIndex}" 
-                                ng-click="selectSection(section, $index)" 
+                            <tr ng-class="{'selected':$index == selectedSectionIndex}"
+                                ng-click="selectSection(section, $index)"
                                 ng-repeat="section in selectedView.sections | filter: sectionname">
                               <td>{{ $index+1 }}</td>
                               <td>{{ section.controllername }}</td>
@@ -781,31 +796,31 @@
                             <div ng-hide="control.controltype=='Nested' || control.controltype=='Select'" class="col-md-3 form-group">
                               <label for="example-text">Sample text</label>
                               <input ng-model="control.exampletext" type="text" class="form-control" id="example-text" placeholder="" />
-                            </div>           
+                            </div>
                             <div class="col-md-2 form-group">
                               <label for="control-width">Width</label>
                               <input ng-model="control.width" type="number" class="form-control" id="control-width" placeholder="2" />
-                            </div>                            
+                            </div>
                             <div ng-show="control.controltype=='Select'" class="col-md-3 form-group">
                               <label for="options">Model</label>
-                              <select class="form-control" id="Model" 
+                              <select class="form-control" id="Model"
                                       ng-model="control.modelname"
                                       ng-options= "model.name as model.name for model in models" >
                                 </select>
-                            </div>         
+                            </div>
                             <div class="col-md-3 form-group">
                               <label for="model-element">Model Element</label>
                               <input ng-model="control.modelelement" type="text" class="form-control" id="model-element" placeholder="" />
-                            </div>                            
+                            </div>
                             <div ng-show="viewtype=='edit'" class="col-md-2 form-group">
-                              <label for="read-only">Is Read Only</label> 
-                              <input ng-model="control.isreadonly" type="checkbox" class="form-control" id="read-only" /> 
+                              <label for="read-only">Is Read Only</label>
+                              <input ng-model="control.isreadonly" type="checkbox" class="form-control" id="read-only" />
                             </div>
                             <div ng-show="control.controltype=='Nested'" class="col-md-2 form-group">
                               <label>
                                   <input type="checkbox" ng-model="control.isarray" class="form-control" >Is Array</input>
                               </label>
-                            </div>                            
+                            </div>
                           </div>
                         </div>
                         <div class="modal-footer">
@@ -820,18 +835,18 @@
                         <div class="modal-body">
                           <div class="form-group">
                             <label for="view-name">View Name</label>
-                            <select id="view-name" class="form-control" 
-                              ng-model="view" 
-                              ng-required="true" 
+                            <select id="view-name" class="form-control"
+                              ng-model="view"
+                              ng-required="true"
                               ng-options="view.viewname for view in views" />
                           </div>
                           <div class="form-group">
                             <label for="section-name">Section Name</label>
-                            <select id="section-name" class="form-control" 
-                              ng-model="section" 
-                              ng-required="true" 
+                            <select id="section-name" class="form-control"
+                              ng-model="section"
+                              ng-required="true"
                               ng-options="section.controllername for section in view.sections" />
-                          </div>                          
+                          </div>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-primary" ng-click="ok()">OK</button>
@@ -856,45 +871,46 @@
                                 <option value="Select">Select</option>
                                 <option value="Date">Date</option>
                                 <option value="Boolean">Boolean</option>
+                                <option value="Footer">Footer</option>
                               </select>
                             </div>
                             <div class="col-md-4 form-group">
                               <label for="nested-control-label">Control Label</label>
                               <input ng-model="nestedcontrol.controllabel" type="text" class="form-control" id="nested-control-label" />
                             </div>
-                            <div ng-hide="nestedcontrol.controltype=='Select'" class="col-md-3 form-group">
+                            <div ng-hide="nestedcontrol.controltype=='Select' || nestedcontrol.controltype=='Footer'" class="col-md-3 form-group">
                               <label for="nested-control-example-text">Sample text</label>
                               <input ng-model="nestedcontrol.exampletext" type="text" class="form-control" id="nested-control-example-text" />
-                            </div>                            
+                            </div>
                             <div class="col-md-2 form-group">
                               <label for="nested-control-width">Width</label>
                               <input ng-model="nestedcontrol.width" type="number" class="form-control" id="nested-control-width" />
-                            </div> 
+                            </div>
                             <div ng-show="nestedcontrol.controltype=='Select'" class="col-md-3 form-group">
                               <label for="options">Model</label>
-                              <select class="form-control" id="Model" 
+                              <select class="form-control" id="Model"
                                       ng-model="nestedcontrol.modelname"
                                       ng-options= "model.name as model.name for model in models" >
                                 </select>
-                            </div>    
+                            </div>
                             <div class="col-md-3 form-group">
                               <label for="nested-model-element">Model Element</label>
                               <input ng-model="nestedcontrol.modelelement" type="text" class="form-control" id="nested-model-element" />
-                            </div>    
+                            </div>
                           </div>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-primary" ng-click="ok()">OK</button>
                             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
                         </div>
-                      </script>                      
+                      </script>
                       <div class="table">
                         <table id="tblControl" class="table">
                           <thead>
                             <tr>
                               <th>#</th>
                               <th>Controls  <a ng-click="searchControl()"><span class="badge">{{ selectedSection.controls.length }}</span></a></th>
-                              <th>Type 
+                              <th>Type
                               <a ng-click="copycontrols()"><span class="glyphicon glyphicon-import"></span></a>
                               <a ng-csv="exportControls()" filename="controls.csv"><span class="glyphicon glyphicon-export"></span></a>
                               </th>
@@ -905,18 +921,18 @@
                             </tr>
                             <tr ng-show="searchControlFlag">
                               <th colspan="5"><input class="form-control" ng-model="c.controlname" /></th>
-                            </tr>                            
+                            </tr>
                           </thead>
                           <tbody>
-                            <tr ng-class="{'selected':$index == selectedControlIndex}" 
-                                ng-click="selectControl(control, $index)" 
+                            <tr ng-class="{'selected':$index == selectedControlIndex}"
+                                ng-click="selectControl(control, $index)"
                                 ng-repeat="control in selectedSection.controls | filter: c.controlname">
                               <td>{{ $index+1 }}</td>
                               <td>{{ control.controllabel }}</td>
                               <td>{{ control.controltype }}</td>
                               <td><a ng-click="editcontrol(control, $index)"><span class="glyphicon glyphicon-edit"></span></a>
                               <a ng-click="moveUp(selectedSection.controls, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(selectedSection.controls, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                                              
+                              <a ng-click="moveDown(selectedSection.controls, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
                               </td>
                               <td><a ng-click="removecontrol($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
@@ -937,24 +953,24 @@
                             </tr>
                             <tr ng-show="searchNestedControlFlag">
                               <th colspan="5"><input class="form-control" ng-model="nc.controlname" /></th>
-                            </tr>                            
+                            </tr>
                           </thead>
                           <tbody>
-                            <tr ng-class="{'selected':$index == selectedNestedControlIndex}" 
-                                ng-click="selectNestedControl(nestedcontrol, $index)" 
+                            <tr ng-class="{'selected':$index == selectedNestedControlIndex}"
+                                ng-click="selectNestedControl(nestedcontrol, $index)"
                                 ng-repeat="nestedcontrol in selectedControl.nestedcontrols | filter: nc.controlname">
                               <td>{{ $index+1 }}</td>
                               <td>{{ nestedcontrol.controllabel }}</td>
                               <td>{{ nestedcontrol.controltype }}</td>
                               <td><a ng-click="editnestedcontrol(nestedcontrol, $index)"><span class="glyphicon glyphicon-edit"></span></a>
                               <a ng-click="moveUp(selectedControl.nestedcontrols, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(selectedControl.nestedcontrols, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                 
+                              <a ng-click="moveDown(selectedControl.nestedcontrols, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
                               </td>
                               <td><a ng-click="removenestedcontrol($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
                         </table>
-                      </div>                      
+                      </div>
                     </div>
                     <!-- Control starts -->
                   </div>
@@ -967,7 +983,7 @@
                   <div class="panel-body">
                     <div class="form-group col-md-3 no-print">
                       <input type="text" ng-model='project.name' class="form-control" id="project-name" placeholder="Project Name" required />
-                    </div> 
+                    </div>
                     <span class="print-only" >{{ project.name }}</span>
                     <div class="col-md-3 form-group no-print">
                       <input type="file" on-read-file="loadJSON(contents)" />
@@ -1003,7 +1019,7 @@
                         <li>{{author}}</li>
                       </ul>
                     </div>
-                  </div>                  
+                  </div>
                 </tab>
               </tabset>
             </div>
