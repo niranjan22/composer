@@ -368,7 +368,29 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
       $scope.selectedElementIndex = null;
     };
 
+    $scope.hasNestedElements = function (model) {
+      var hasNestedElements = false;
+      model.elements.forEach (function (element) {
+        if (element.elementtype === 'Nested') {
+          if (element.isarray === true) {
+            hasNestedElements = true;
+            return hasNestedElements;
+          }
+        }
+      });
+      return hasNestedElements;
+    };    
+    
     $scope.createcontroller = function (data) {
+      var ptemplates = [];
+      var pmethods = [];
+      if ($scope.hasNestedElements(data)){
+        ptemplates = ['create','remove','update','find','findOne', 'standAlone', 'Modal'];
+        pmethods = ['create','remove','update','find','findOne', 'Modal'];
+      }else{
+        ptemplates = ['create','remove','update','find','findOne', 'standAlone'];
+        pmethods = ['create','remove','update','find','findOne'];
+      }      
       var modalInstance = $modal.open({
         animation: false,
         templateUrl: 'createController.html',
@@ -379,16 +401,14 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
             return data;
           },
           templates: function () {
-            var t = ['create','remove','update','find','findOne', 'standAlone', 'Modal'];
-            return t;
+            return ptemplates;
           },
           methods: function () {
-            var t = ['create','remove','update','find','findOne'];
-            return t;
+            return pmethods;
           }
         }
       });
-
+      
       modalInstance.result.then(function (methods) {
         var ct = {controllername: data.name + ' Controller',
                   modelname: data.name,
