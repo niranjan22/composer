@@ -1923,7 +1923,13 @@ angular.module('composerApp').controller('NestedElementInstanceCtrl', function (
 angular.module('composerApp').controller('ControllerInstanceCtrl', function ($scope, $modalInstance, controller, models, templates) {
 
   $scope.controller = controller;
-  $scope.models = models;
+  var modelList = [];
+  models.forEach(function (model) {
+    modelList.push({name: model.name});
+  });
+  modelList.push({name: 'User'});
+  $scope.models = modelList;
+  
   $scope.templates = templates;
 
   $scope.fetchTemplateslist = function () {
