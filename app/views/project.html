@@ -417,8 +417,8 @@
                               ng-options="model.name as model.name for model in models" />
                           </div>
                           <div ng-hide="templates.length===0" class="form-group">
-                            <label for="method-type">Method</label>
-                            <select multiple id="method-type" class="form-control" size='5'
+                            <label for="method-type">Method Name</label>
+                            <select multiple id="method-type" class="form-control" size='7'
                               ng-model="controller.methods"
                               ng-required="true"
                               ng-options="template for template in templates" />

@@ -385,10 +385,18 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
       var ptemplates = [];
       var pmethods = [];
       if ($scope.hasNestedElements(data)){
-        ptemplates = ['create','remove','update','find','findOne', 'standAlone', 'Modal'];
-        pmethods = ['create','remove','update','find','findOne', 'Modal'];
+        ptemplates = ['create','remove','update','find','findOne','standAlone'];
+        pmethods = ['create','remove','update','find','findOne'];
+        if (data.elements) {
+          data.elements.forEach( function (element) {
+            if (element.elementtype === 'Nested') {
+              ptemplates.push(element.elementname);
+              pmethods.push(element.elementname);
+            }
+          });
+        }        
       }else{
-        ptemplates = ['create','remove','update','find','findOne', 'standAlone'];
+        ptemplates = ['create','remove','update','find','findOne','standAlone'];
         pmethods = ['create','remove','update','find','findOne'];
       }      
       var modalInstance = $modal.open({
@@ -415,11 +423,32 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                   services: [],
                   lookups: [],
                   methods: []};
-        methods.forEach(function (item) {
-          var method = {methodname: item,
-                        methodtype: item};
-          ct.methods.push(method);
-          });
+        
+        methods.forEach( function (method) {
+          if (method === 'create' || method === 'remove' || method === 'update' || method === 'find' || method === 'findOne' || method === 'standAlone'){
+            ct.methods.push({methodname: method, methodtype: method});
+          } else {
+            ct.methods.push({methodname: method, methodtype: 'Modal'});
+          }
+        });        
+
+        data.elements.forEach( function (element) {
+          if (element.elementtype === 'Schema.Types.ObjectId') {
+            if (ct.services.indexOf(element.schemaobjref) === -1){
+              ct.services.push(element.schemaobjref);
+            }
+          }
+          if (element.elementtype === 'Nested'){
+            element.elements.forEach( function (nestedelement) {
+              if (nestedelement.elementtype === 'Schema.Types.ObjectId') {
+                if (ct.services.indexOf(nestedelement.schemaobjref) === -1){
+                  ct.services.push(nestedelement.schemaobjref);
+                }
+              }
+            });              
+          }
+        });
+        
         $scope.project.controllers.push(ct);
         $scope.selectedController = ct;
 
@@ -777,8 +806,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
             return $scope.project.models;
           },
           templates: function () {
-            var t = ['create','remove','update','find','findOne', 'Modal', 'standAlone'];
-            return t;
+            return ['create','remove','update','find','findOne', 'Modal'];
           }
         }
       });
@@ -793,12 +821,37 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
             methods.push({methodname: method, methodtype: 'Modal'});
           }
         });
-                            
+
         var ct = {controllername: data.controllername,
                   modelname: data.modelname,
                   methods: methods,
                   services: [],
                   lookups: []};
+                  
+        var md = $scope.project.models.filter(function (model) {
+          if (model.name === data.modelname) {
+            return model;
+          }
+        })[0];
+        if (md){
+          md.elements.forEach( function (element) {
+            if (element.elementtype === 'Schema.Types.ObjectId') {
+              if (ct.services.indexOf(element.schemaobjref) === -1){
+                ct.services.push(element.schemaobjref);
+              }
+            }
+            if (element.elementtype === 'Nested'){
+              element.elements.forEach( function (nestedelement) {
+                if (nestedelement.elementtype === 'Schema.Types.ObjectId') {
+                  if (ct.services.indexOf(nestedelement.schemaobjref) === -1){
+                    ct.services.push(nestedelement.schemaobjref);
+                  }
+                }
+              });              
+            }
+          });
+        }
+
         $scope.project.controllers.push(ct);
         $scope.selectedController = ct;
         $scope.selectedControllerIndex = $scope.project.controllers.length-1;
@@ -1945,28 +1998,27 @@ angular.module('composerApp').controller('ControllerInstanceCtrl', function ($sc
   $scope.controller = controller;
   var modelList = [];
   models.forEach(function (model) {
-    modelList.push({name: model.name});
+    modelList.push(model);
   });
   modelList.push({name: 'User'});
   $scope.models = modelList;
-  
   $scope.templates = templates;
 
   $scope.fetchTemplateslist = function () {
-   
     var model = $scope.models.filter( function (model) {
       if(model.name === $scope.controller.modelname) {
         return model;
       }
     })[0];
-   
+    $scope.controller.controllername = $scope.controller.modelname + ' ' + 'Controller';
     $scope.templates = ['create','remove','update','find','findOne','standAlone'];
-    model.elements.reduce( function (template, element) {
-      if (element.elementtype === 'Nested') {
-        $scope.templates.push(element.elementname);
-      }
-    });
-    
+    if (model.elements) {
+      model.elements.reduce( function (template, element) {
+        if (element.elementtype === 'Nested') {
+          $scope.templates.push(element.elementname);
+        }
+      });
+    }
   };
       
   $scope.ok = function () {
