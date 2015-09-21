@@ -275,15 +275,25 @@
                                 <option value="Number">Number</option>
                                 <option value="Schema.Types.ObjectId">Schema.Types.ObjectId</option>
                                 <option value="Nested">Nested</option>
+                                <option value="File">File</option>
                               </select>
                             </div>
                             <div ng-show="element.elementtype=='Schema.Types.ObjectId'" class="form-group">
                               <label for="element-schema-object-ref">Schema Object Ref</label>
-                              <select class="form-control" id="element-schema-object-ref" ng-model="element.schemaobjref"
-                              ng-options= "model.name as model.name for model in models | filter:'!{{ modelname }}':true" >
+                              <select class="form-control" id="element-schema-object-ref" 
+                                      ng-model="element.schemaobjref"
+                                      ng-change="fetchElementslist(element.schemaobjref)"
+                                      ng-options= "model.name as model.name for model in models | filter:'!{{ modelname }}':true" >
                               </select>
                             </div>
-                            <div ng-show="element.elementtype=='Nested'" class="checkbox">
+                            <div ng-show="element.elementtype=='Schema.Types.ObjectId'" class="form-group">
+                              <label for="populateelements">Populate Elements</label>
+                              <select multiple class="form-control" id="populateelements" 
+                                      ng-model="element.populateelements"
+                                      ng-options= "selement as selement for selement in selements" >
+                              </select>
+                            </div>                            
+                            <div ng-show="element.elementtype=='Nested' || element.elementtype=='File'" class="checkbox">
                               <label>
                                   <input type="checkbox" ng-model="element.isarray" >Is Array</input>
                               </label>
@@ -338,7 +348,8 @@
                             <div class="form-group">
                               <label for="nested-element-type">Element Type</label>
                               <!-- <input ng-model="element.elementtype" type="text" class="form-control" id="element-type" placeholder="String" /> -->
-                              <select class="form-control" ng-model="nestedelement.elementtype" id="nested-element-type">
+                              <select class="form-control" id="nested-element-type"
+                                      ng-model="nestedelement.elementtype">
                                 <option value="String">String</option>
                                 <option value="Boolean">Boolean</option>
                                 <option value="Date">Date</option>
@@ -348,9 +359,18 @@
                             </div>
                             <div ng-show="nestedelement.elementtype=='Schema.Types.ObjectId'" class="form-group">
                               <label for="nested-element-schema-object-ref">Schema Object Ref</label>
-                              <select class="form-control" id="nested-element-schema-object-ref" ng-model="nestedelement.schemaobjref"
-                              ng-options= "model.name as model.name for model in models | filter:'!{{ modelname }}':true" />
+                              <select class="form-control" id="nested-element-schema-object-ref" 
+                                      ng-model="nestedelement.schemaobjref"
+                                      ng-change="fetchElementslist(nestedelement.schemaobjref)"
+                                      ng-options= "model.name as model.name for model in models | filter:'!{{ modelname }}':true" />
                             </div>
+                            <div ng-show="nestedelement.elementtype=='Schema.Types.ObjectId'" class="form-group">
+                              <label for="nested-element-populateelements">Populate Elements</label>
+                              <select multiple class="form-control" id="nested-element-populateelements" 
+                                      ng-model="nestedelement.populateelements"
+                                      ng-options= "selement as selement for selement in selements" >
+                              </select>
+                            </div>                             
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-primary" ng-click="ok()">OK</button>
@@ -787,6 +807,7 @@
                                 <option value="Date">Date</option>
                                 <option value="Boolean">Boolean</option>
                                 <option value="Nested">Nested</option>
+                                <option value="File">File</option>
                               </select>
                             </div>
                             <div class="col-md-3 form-group">
@@ -802,10 +823,18 @@
                               <input ng-model="control.width" type="number" class="form-control" id="control-width" placeholder="2" />
                             </div>
                             <div ng-show="control.controltype=='Select'" class="col-md-3 form-group">
-                              <label for="options">Model</label>
+                              <label for="Model">Model</label>
                               <select class="form-control" id="Model"
                                       ng-model="control.modelname"
+                                      ng-change="fetchElementslist(control.modelname)"
                                       ng-options= "model.name as model.name for model in models" >
+                                </select>
+                            </div>
+                            <div ng-show="control.controltype=='Select'" class="col-md-3 form-group">
+                              <label for="displayelement">Display Element</label>
+                              <select class="form-control" id="displayelement"
+                                      ng-model="control.displayelement"
+                                      ng-options= "selement as selement for selement in selements" >
                                 </select>
                             </div>
                             <div class="col-md-3 form-group">
@@ -887,12 +916,20 @@
                               <input ng-model="nestedcontrol.width" type="number" class="form-control" id="nested-control-width" />
                             </div>
                             <div ng-show="nestedcontrol.controltype=='Select'" class="col-md-3 form-group">
-                              <label for="options">Model</label>
+                              <label for="Model">Model</label>
                               <select class="form-control" id="Model"
                                       ng-model="nestedcontrol.modelname"
+                                      ng-change="fetchElementslist(control.modelname)"
                                       ng-options= "model.name as model.name for model in models" >
                                 </select>
                             </div>
+                            <div ng-show="nestedcontrol.controltype=='Select'" class="col-md-3 form-group">
+                              <label for="displayelement">Display Element</label>
+                              <select class="form-control" id="displayelement"
+                                      ng-model="nestedcontrol.displayelement"
+                                      ng-options= "selement.elementname for selement in selements" >
+                                </select>
+                            </div>                            
                             <div class="col-md-3 form-group">
                               <label for="nested-model-element">Model Element</label>
                               <input ng-model="nestedcontrol.modelelement" type="text" class="form-control" id="nested-model-element" />
