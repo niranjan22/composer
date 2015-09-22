@@ -14,7 +14,7 @@
                   <div class="panel-body">
                     <alert ng-repeat="alert in alerts" close="closeAlert($index)">{{alert.msg}}</alert>
                     <!-- menu starts here -->
-                    <div class="col-md-5">
+                    <div class="col-md-3">
                       <script type="text/ng-template" id="menuContent.html">
                         <div class="modal-header">
                             <h3 class="modal-title">Menu Details</h3>
@@ -40,33 +40,36 @@
                             <tr>
                               <th>#</th>
                               <th>Menus  <a ng-click="searchMenu()"><span class="badge">{{ project.menus.length }}</span></a></th>
-                              <th></th>
+<!--                               <th></th> -->
                               <th><a ng-click="newmenu()"><span class="glyphicon glyphicon-plus"></span></a></th>
                               <th><a ng-click="removeallmenus()"><span class="glyphicon glyphicon-trash"></span></a></th>
                             </tr>
                             <tr ng-show="searchMenuFlag">
-                              <th colspan="5"><input class="form-control" ng-model="m.menuname" /></th>
+                              <th colspan="4"><input class="form-control" ng-model="m.menuname" /></th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr ng-class="{'selected':$index == selectedMenuIndex}"
                                 ng-click="selectMenu(menu, $index)"
                                 ng-repeat="menu in project.menus | filter: m.menuname">
-                              <td>{{ $index+1 }}</td>
-                              <td>{{ menu.menulabel }}</td>
-                              <td><span class="badge">{{ menu.submenus.length }}</span></td>
-                              <td><a ng-click="editmenu(menu, $index)"><span class="glyphicon glyphicon-edit"></span></a>
-                              <a ng-click="moveUp(project.menus, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(project.menus, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                              <td>{{ $index+1 }}
+                                <a ng-click="moveUp(project.menus, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
                               </td>
-                              <td><a ng-click="removemenu($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
+                              <td>{{ menu.menulabel }}</td>
+<!--                               <td><span class="badge">{{ menu.submenus.length }}</span></td> -->
+                              <td><a ng-click="editmenu(menu, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                              </td>
+                              <td>
+                                <a ng-click="removemenu($index)"><span class="glyphicon glyphicon-trash"></span></a>
+                                <a ng-click="moveDown(project.menus, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                              </td>
                             </tr>
                           </tbody>
                         </table>
                       </div>
                     </div>
                     <!-- sub-menu starts here -->
-                    <div class="col-md-7">
+                    <div class="col-md-9">
                       <script type="text/ng-template" id="submenuContent.html">
                         <div class="modal-header">
                             <h3 class="modal-title">Sub-menu Details</h3>
@@ -117,14 +120,18 @@
                             <tr ng-class="{'selected':$index == selectedSubMenuIndex}"
                                 ng-click="selectSubMenu(submenu, $index)"
                                 ng-repeat="submenu in selectedMenu.submenus | filter: sm.submenuname">
-                              <td>{{ $index+1 }}</td>
+                              <td>{{ $index+1 }}
+                                <a ng-click="moveUp(selectedMenu.submenus, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                              </td>
                               <td>{{ submenu.submenuname }}{{ submenu.modelname }}</td>
                               <td>{{ submenu.submenulabel }}{{ submenu.modelname }}</td>
-                              <td><a ng-click="editsubmenu(submenu, $index)"><span class="glyphicon glyphicon-edit"></span></a>
-                              <a ng-click="moveUp(selectedMenu.submenus, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(selectedMenu.submenus, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                              <td>
+                                <a ng-click="editsubmenu(submenu, $index)"><span class="glyphicon glyphicon-edit"></span></a>
                               </td>
-                              <td><a ng-click="removesubmenu($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
+                              <td>
+                                <a ng-click="removesubmenu($index)"><span class="glyphicon glyphicon-trash"></span></a>
+                                <a ng-click="moveDown(selectedMenu.submenus, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                              </td>
                             </tr>
                           </tbody>
                         </table>
@@ -137,7 +144,7 @@
                     Models
                   </tab-heading>
                   <div class="panel-body">
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                       <script type="text/ng-template" id="modelContent.html">
                         <div class="modal-header">
                             <h3 class="modal-title">Model Details</h3>
@@ -212,14 +219,14 @@
                             <tr>
                               <th>#</th>
                               <th>Models  <a ng-click="searchModel()"><span class="badge">{{ project.models.length }}</span></a></th>
-                              <th></th>
+<!--                               <th></th> -->
                               <th><a ng-click="createallcontrollers()"><span class="badge">C</span></a></th>
                               <th><a ng-click="createallviews()"><span class="badge">V</span></a></th>
                               <th><a ng-click="newmodel()"><span class="glyphicon glyphicon-plus"></span></a></th>
                               <th><a ng-click="removeallmodels()"><span class="glyphicon glyphicon-trash"></span></a></th>
                             </tr>
                             <tr ng-show="searchModelFlag">
-                              <th colspan="7"><input class="form-control" ng-model="q.name" /></th>
+                              <th colspan="6"><input class="form-control" ng-model="q.name" /></th>
                             </tr>
                           </thead>
                           <tbody>
@@ -228,7 +235,7 @@
                                 ng-repeat="model in project.models | filter: q.name">
                               <td>{{ $index+1 }}</td>
                               <td>{{ model.name }}</td>
-                              <td><span class="badge">{{ model.elements.length }}</span></td>
+<!--                               <td><span class="badge">{{ model.elements.length }}</span></td> -->
                               <td><a ng-click="createcontroller(model)"><span class="badge">C</span></a></td>
                               <td><a ng-click="createviews(model)"><span class="badge">V</span></a></td>
                               <td><a ng-click="editmodel(model, $index)"><span class="glyphicon glyphicon-edit"></span></a>
@@ -241,7 +248,7 @@
                         </table>
                       </div>
                     </div>
-                    <div class="col-md-7">
+                    <div class="col-md-8">
                       <!-- Single button -->
                         <!--
                         <div class="btn-group">
@@ -919,7 +926,7 @@
                               <label for="Model">Model</label>
                               <select class="form-control" id="Model"
                                       ng-model="nestedcontrol.modelname"
-                                      ng-change="fetchElementslist(control.modelname)"
+                                      ng-change="fetchElementslist(nestedcontrol.modelname)"
                                       ng-options= "model.name as model.name for model in models" >
                                 </select>
                             </div>
@@ -927,7 +934,7 @@
                               <label for="displayelement">Display Element</label>
                               <select class="form-control" id="displayelement"
                                       ng-model="nestedcontrol.displayelement"
-                                      ng-options= "selement.elementname for selement in selements" >
+                                      ng-options= "selement for selement in selements" >
                                 </select>
                             </div>                            
                             <div class="col-md-3 form-group">

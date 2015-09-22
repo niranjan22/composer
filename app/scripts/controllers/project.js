@@ -536,9 +536,11 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                             width       : 3,
                             modelelement: ne.elementname,
                             modelname   : ne.schemaobjref,
-                            displayelement: ne.populateelements[0],
                             controllabel: changeCase.titleCase(changeCase.sentenceCase(ne.elementname))};
-                            c.nestedcontrols.push(nc);
+                  if (ne.elementtype === 'Schema.Types.ObjectId'){
+                    nc.displayelement = ne.populateelements[0];
+                  }
+                  c.nestedcontrols.push(nc);
                 }
               } else {
                 c = { controlname : e.elementname,
@@ -546,9 +548,11 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                       width       : 3,
                       modelelement: e.elementname,
                       modelname   : e.schemaobjref,
-                      displayelement: e.populateelements[0],
                       controllabel: changeCase.titleCase(changeCase.sentenceCase(e.elementname))
                 };
+                if (e.elementtype === 'Schema.Types.ObjectId'){
+                  c.displayelement = e.populateelements[0];
+                }
               }
               v.sections[0].controls.push(c);
             } else {
@@ -556,8 +560,10 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                 c = { controlname : e.elementname,
                       controltype : et,
                       modelelement: e.elementname,
-                      displayelement: e.populateelements[0],
                       controllabel: changeCase.titleCase(changeCase.sentenceCase(e.elementname))};
+                if (e.elementtype === 'Schema.Types.ObjectId'){
+                  c.displayelement = e.populateelements[0];
+                }
                 v.sections[0].controls.push(c);
               }
             }
@@ -750,6 +756,9 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
           },
           models: function () {
             return $scope.project.models;
+          },
+          selements: function () {
+            return [];
           }
         }
       });
@@ -789,6 +798,22 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
           },
           models: function () {
             return $scope.project.models;
+          },
+          selements: function() {
+            var selements = [];
+            var model = $scope.project.models.filter( function (model) {
+              if(model.name === data.schemaobjref) {
+                return model;
+              }
+            })[0];       
+            if (model.elements) {
+              model.elements.forEach( function (element) {
+                if (element.elementtype !== 'Nested' && element.elementtype !== 'Schema.Types.ObjectId') {
+                  selements.push(element.elementname);
+                }
+              });
+            }            
+            return selements;
           }
         }
       });
@@ -1250,8 +1275,10 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                 width       : 3,
                 modelelement: e.elementname,
                 modelname   : e.schemaobjref,
-                displayelement: e.populateelements[0],
                 controllabel: changeCase.titleCase(changeCase.sentenceCase(e.elementname))};
+            if (e.elementtype === 'Schema.Types.ObjectId'){
+              c.displayelement = e.populateelements[0];
+            }
           }
           v.sections[0].controls.push(c);
         }
@@ -1359,19 +1386,23 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                         width         : 3,
                         modelelement  : ne.elementname,
                         modelname     : ne.schemaobjref,
-                        displayelement: ne.populateelements[0],
                         controllabel: changeCase.titleCase(changeCase.sentenceCase(ne.elementname))
               };
+              if (ne.elementtype === 'Schema.Types.ObjectId'){
+                nc.displayelement = ne.populateelements[0];
+              }
               c.nestedcontrols.push(nc);
             }
           } else {
             c = { controlname : e.elementname,
-            controltype : et,
-            width       : 3,
-            modelelement: e.elementname,
-            modelname   : e.schemaobjref,       
-            displayelement: e.populateelements[0],            
-            controllabel: changeCase.titleCase(changeCase.sentenceCase(e.elementname))};
+                  controltype : et,
+                  width       : 3,
+                  modelelement: e.elementname,
+                  modelname   : e.schemaobjref,       
+                  controllabel: changeCase.titleCase(changeCase.sentenceCase(e.elementname))};
+            if (e.elementtype === 'Schema.Types.ObjectId'){
+              c.displayelement = e.populateelements[0];
+            }
           }
           v.sections[0].controls.push(c);
         }
@@ -1606,8 +1637,21 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
           viewtype: function () {
             return $scope.selectedView.viewtype;
           },
-          selements: function() {
-            return [data.displayelement];
+          selements: function () {
+            var selements = [];
+            var model = $scope.project.models.filter( function (model) {
+              if(model.name === data.modelname) {
+                return model;
+              }
+            })[0];       
+            if (model.elements) {
+              model.elements.forEach( function (element) {
+                if (element.elementtype !== 'Nested' && element.elementtype !== 'Schema.Types.ObjectId') {
+                  selements.push(element.elementname);
+                }
+              });
+            }            
+            return selements;
           }
         }
       });
@@ -1746,6 +1790,10 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
           },
           models: function () {
             return $scope.project.models;
+          },
+          selements: function () {
+            var selements = [];
+            return selements;
           }
         }
       });
@@ -1786,6 +1834,24 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
           },
           models: function () {
             return $scope.project.models;
+          },
+          selements: function () {
+            var selements = [];
+            var model = $scope.project.models.filter( function (model) {
+              if(model.name === data.modelname) {
+                return model;
+              }
+            })[0];       
+            if (model){
+              if (model.elements) {
+                model.elements.forEach( function (element) {
+                  if (element.elementtype !== 'Nested' && element.elementtype !== 'Schema.Types.ObjectId') {
+                    selements.push(element.elementname);
+                  }
+                });
+              }            
+            }
+            return selements;
           }
         }
       });
@@ -2004,13 +2070,11 @@ angular.module('composerApp').controller('ElementInstanceCtrl', function ($scope
   $scope.selements = selements;
   
   $scope.fetchElementslist = function (selectedmodel) {
-    
     var model = $scope.originalmodels.filter( function (model) {
       if(model.name === selectedmodel) {
         return model;
       }
     })[0];
-    
     $scope.selements = [];
     if (model.elements) {
       model.elements.forEach( function (element) {
@@ -2031,7 +2095,7 @@ angular.module('composerApp').controller('ElementInstanceCtrl', function ($scope
 
 });
 
-angular.module('composerApp').controller('NestedElementInstanceCtrl', function ($scope, $modalInstance, nestedelement, modelname, models) {
+angular.module('composerApp').controller('NestedElementInstanceCtrl', function ($scope, $modalInstance, nestedelement, modelname, models, selements) {
 
   $scope.nestedelement = nestedelement;
   $scope.modelname = modelname;
@@ -2043,6 +2107,7 @@ angular.module('composerApp').controller('NestedElementInstanceCtrl', function (
   modelList.push({name: 'User'});
   $scope.models = modelList;
   $scope.originalmodels = models;
+  $scope.selements = selements;
   
   $scope.fetchElementslist = function (selectedmodel) {
     
@@ -2207,10 +2272,10 @@ angular.module('composerApp').controller('ControlInstanceCtrl', function ($scope
     modelList.push({name: model.name});
   });
   modelList.push({name: 'User'});
-  $scope.originalmodels = models;
   $scope.models = modelList;
   $scope.viewtype = viewtype;
-
+  $scope.originalmodels = models;
+  
   $scope.fetchElementslist = function (selectedmodel) {
     
     var model = $scope.originalmodels.filter( function (model) {
@@ -2253,7 +2318,7 @@ angular.module('composerApp').controller('CopyControlsInstanceCtrl', function ($
 
 });
 
-angular.module('composerApp').controller('NestedControlInstanceCtrl', function ($scope, $modalInstance, nestedcontrol, models) {
+angular.module('composerApp').controller('NestedControlInstanceCtrl', function ($scope, $modalInstance, nestedcontrol, models, selements) {
 
   $scope.nestedcontrol = nestedcontrol;
   var modelList = [];
@@ -2262,16 +2327,15 @@ angular.module('composerApp').controller('NestedControlInstanceCtrl', function (
   });
   modelList.push({name: 'User'});
   $scope.models = modelList;  
-
+  $scope.originalmodels = models;
+  $scope.selements = selements;
   
   $scope.fetchElementslist = function (selectedmodel) {
-    
     var model = $scope.originalmodels.filter( function (model) {
       if(model.name === selectedmodel) {
         return model;
       }
     })[0];
-    
     $scope.selements = [];
     if (model.elements) {
       model.elements.forEach( function (element) {
@@ -2281,8 +2345,6 @@ angular.module('composerApp').controller('NestedControlInstanceCtrl', function (
       });
     }
   };
-  
-  
   
   $scope.ok = function () {
     $modalInstance.close($scope.nestedcontrol);
