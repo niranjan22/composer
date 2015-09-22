@@ -249,7 +249,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
     };
 
     $scope.removesubmenu = function (index) {
-      toaster.pop('error', "Sub Menu", $scope.selectedMenu.submenus[index].submenulabel + ', deleted');
+      toaster.pop('error', "Sub Menu", $scope.selectedMenu.submenus[index].modelname + ', deleted');
       $scope.selectedMenu.submenus.splice(index, 1);
     };
 
@@ -306,14 +306,129 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
       $scope.selectedElement = null;
       $scope.selectedElementIndex = null;
     };
-    
-    $scope.moveUp = function (items, index){
-      items.move(index, index-1);
-    };
 
-    $scope.moveDown = function (items, index){
-      items.move(index, index+1);
+    $scope.moveUpMenu = function (items, index){
+      if (index>0){
+        items.move(index, index-1);
+        $scope.selectMenu(items[index-1],index-1); 
+      }
+    };
+    $scope.moveDownMenu = function (items, index){
+      if (index<items.length){
+        items.move(index, index+1);
+        $scope.selectMenu(items[index+1],index+1); 
+      }
     };        
+    
+    $scope.moveUpSubmenu = function (items, index){
+      if (index>0){
+        items.move(index, index-1);
+        $scope.selectSubMenu(items[index-1],index-1); 
+      }
+    };
+    $scope.moveDownSubmenu = function (items, index){
+      if (index<items.length){
+        items.move(index, index+1);
+        $scope.selectSubMenu(items[index+1],index+1); 
+      }
+    };        
+    $scope.moveUpModel = function (items, index){
+      if (index>0){
+        items.move(index, index-1);
+        $scope.selectModel(items[index-1],index-1); 
+      }
+    };
+    $scope.moveDownModel = function (items, index){
+      if (index<items.length){
+        items.move(index, index+1);
+        $scope.selectModel(items[index+1],index+1); 
+      }
+    };        
+    $scope.moveUpElement = function (items, index){
+      if (index>0){
+        items.move(index, index-1);
+        $scope.selectElement(items[index-1],index-1); 
+      }
+    };
+    $scope.moveDownElement = function (items, index){
+      if (index<items.length){
+        items.move(index, index+1);
+        $scope.selectElement(items[index+1],index+1); 
+      }
+    };        
+    $scope.moveUpNestedElement = function (items, index){
+      if (index>0){
+        items.move(index, index-1);
+        $scope.selectNestedElement(items[index-1],index-1); 
+      }
+    };
+    $scope.moveDownNestedElement = function (items, index){
+      if (index<items.length){
+        items.move(index, index+1);
+        $scope.selectNestedElement(items[index+1],index+1); 
+      }
+    };        
+    $scope.moveUpController = function (items, index){
+      if (index>0){
+        items.move(index, index-1);
+        $scope.selectController(items[index-1],index-1); 
+      }
+    };
+    $scope.moveDownController = function (items, index){
+      if (index<items.length){
+        items.move(index, index+1);
+        $scope.selectController(items[index+1],index+1); 
+      }
+    };        
+    $scope.moveUpLookup = function (items, index){
+      if (index>0){
+        items.move(index, index-1);
+        $scope.selectLookup(items[index-1],index-1); 
+      }
+    };
+    $scope.moveDownLookup = function (items, index){
+      if (index<items.length){
+        items.move(index, index+1);
+        $scope.selectLookup(items[index+1],index+1); 
+      }
+    };            
+    $scope.moveUpView = function (items, index){
+      if (index>0){
+        items.move(index, index-1);
+        $scope.selectView(items[index-1],index-1); 
+      }
+    };
+    $scope.moveDownView = function (items, index){
+      if (index<items.length){
+        items.move(index, index+1);
+        $scope.selectView(items[index+1],index+1); 
+      }
+    };        
+    $scope.moveUpControl = function (items, index){
+      if (index>0){
+        items.move(index, index-1);
+        $scope.selectControl(items[index-1],index-1); 
+      }
+    };
+    $scope.moveDownControl = function (items, index){
+      if (index<items.length){
+        items.move(index, index+1);
+        $scope.selectControl(items[index+1],index+1); 
+      }
+    };        
+    $scope.moveUpNestedControl = function (items, index){
+      if (index>0){
+        items.move(index, index-1);
+        $scope.selectNestedControl(items[index-1],index-1); 
+      }
+    };
+    $scope.moveDownNestedControl = function (items, index){
+      if (index<items.length){
+        items.move(index, index+1);
+        $scope.selectNestedControl(items[index+1],index+1); 
+      }
+    };            
+    
     Array.prototype.move = function(from, to) {
       this.splice(to, 0, this.splice(from, 1)[0]);
     };

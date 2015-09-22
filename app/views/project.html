@@ -39,29 +39,43 @@
                           <thead>
                             <tr>
                               <th>#</th>
-                              <th>Menus  <a ng-click="searchMenu()"><span class="badge">{{ project.menus.length }}</span></a></th>
-<!--                               <th></th> -->
-                              <th><a ng-click="newmenu()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="removeallmenus()"><span class="glyphicon glyphicon-trash"></span></a></th>
+                              <th>Menus
+                                <a ng-click="searchMenu()"><span class="glyphicon glyphicon-search"></a>
+                                <a ng-click="moveUpMenu(project.menus, selectedMenuIndex)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                                <a ng-click="moveDownMenu(project.menus, selectedMenuIndex)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                                                                            
+                              </th>
+                              <th>
+                                <a ng-click="newmenu()"><span class="glyphicon glyphicon-plus"></span></a>
+                                <a ng-click="removeallmenus()"><span class="glyphicon glyphicon-trash"></a>
+                                <!-- <div class="btn-group">
+                                  <button type="button" class="btn btn-primary">Action</button>
+                                  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                  </button>
+                                  <ul class="dropdown-menu">
+                                    <li><a ng-click="newmenu()">Add Menu</a></li>
+                                    <li><a ng-click="searchMenu()">Search</a></li>
+                                    <li><a ng-click="removeallmenus()">Remove All</a></li>
+                                    <li><a ng-click="moveUpMenu()">Move Up</a></li>
+                                    <li><a ng-click="moveDownMenu()">Move Down</a></li>
+                                  </ul>
+                                </div> -->
+                              </th>
                             </tr>
                             <tr ng-show="searchMenuFlag">
-                              <th colspan="4"><input class="form-control" ng-model="m.menuname" /></th>
+                              <th colspan="3"><input class="form-control" ng-model="m.menuname" /></th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr ng-class="{'selected':$index == selectedMenuIndex}"
                                 ng-click="selectMenu(menu, $index)"
                                 ng-repeat="menu in project.menus | filter: m.menuname">
-                              <td>{{ $index+1 }}
-                                <a ng-click="moveUp(project.menus, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              </td>
+                              <td>{{ $index+1 }}</td>
                               <td>{{ menu.menulabel }}</td>
-<!--                               <td><span class="badge">{{ menu.submenus.length }}</span></td> -->
-                              <td><a ng-click="editmenu(menu, $index)"><span class="glyphicon glyphicon-edit"></span></a>
-                              </td>
                               <td>
+                                <a ng-click="editmenu(menu, $index)"><span class="glyphicon glyphicon-edit"></span></a>
                                 <a ng-click="removemenu($index)"><span class="glyphicon glyphicon-trash"></span></a>
-                                <a ng-click="moveDown(project.menus, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
                               </td>
                             </tr>
                           </tbody>
@@ -107,30 +121,31 @@
                           <thead>
                             <tr>
                               <th>#</th>
-                              <th>Sub Menus  <a ng-click="searchSubMenu()"><span class="badge">{{ selectedMenu.submenus.length }}</span></a></th>
+                              <th>Sub Menus
+                                <a ng-click="searchSubMenu()"><span class="glyphicon glyphicon-search"></a>
+                                <a ng-click="moveUpSubmenu(selectedMenu.submenus, selectedSubMenuIndex)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                                <a ng-click="moveDownSubmenu(selectedMenu.submenus, selectedSubMenuIndex)"><span class="glyphicon glyphicon-arrow-down"></span></a>                              
+                              </th>
                               <th>Sub Menu Label</th>
-                              <th><a ng-click="newsubmenu()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="removeallsubmenus()"><span class="glyphicon glyphicon-trash"></a></th>
+                              <th>
+                                <a ng-click="newsubmenu()"><span class="glyphicon glyphicon-plus"></span></a>
+                                <a ng-click="removeallsubmenus()"><span class="glyphicon glyphicon-trash"></a>
+                              </th>
                             </tr>
                             <tr ng-show="searchSubMenuFlag">
-                              <th colspan="5"><input class="form-control" ng-model="sm.submenuname" /></th>
+                              <th colspan="4"><input class="form-control" ng-model="sm.submenuname" /></th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr ng-class="{'selected':$index == selectedSubMenuIndex}"
                                 ng-click="selectSubMenu(submenu, $index)"
                                 ng-repeat="submenu in selectedMenu.submenus | filter: sm.submenuname">
-                              <td>{{ $index+1 }}
-                                <a ng-click="moveUp(selectedMenu.submenus, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              </td>
+                              <td>{{ $index+1 }}</td>
                               <td>{{ submenu.submenuname }}{{ submenu.modelname }}</td>
                               <td>{{ submenu.submenulabel }}{{ submenu.modelname }}</td>
                               <td>
                                 <a ng-click="editsubmenu(submenu, $index)"><span class="glyphicon glyphicon-edit"></span></a>
-                              </td>
-                              <td>
                                 <a ng-click="removesubmenu($index)"><span class="glyphicon glyphicon-trash"></span></a>
-                                <a ng-click="moveDown(selectedMenu.submenus, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
                               </td>
                             </tr>
                           </tbody>
@@ -144,7 +159,7 @@
                     Models
                   </tab-heading>
                   <div class="panel-body">
-                    <div class="col-md-4">
+                    <div class="col-md-5">
                       <script type="text/ng-template" id="modelContent.html">
                         <div class="modal-header">
                             <h3 class="modal-title">Model Details</h3>
@@ -218,15 +233,20 @@
                           <thead>
                             <tr>
                               <th>#</th>
-                              <th>Models  <a ng-click="searchModel()"><span class="badge">{{ project.models.length }}</span></a></th>
-<!--                               <th></th> -->
-                              <th><a ng-click="createallcontrollers()"><span class="badge">C</span></a></th>
-                              <th><a ng-click="createallviews()"><span class="badge">V</span></a></th>
-                              <th><a ng-click="newmodel()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="removeallmodels()"><span class="glyphicon glyphicon-trash"></span></a></th>
+                              <th>Models  
+                                <a ng-click="searchModel()"><span class="glyphicon glyphicon-search"></span></a>
+                                <a ng-click="moveUpModel(project.models, selectedModelIndex)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                                <a ng-click="moveDownModel(project.models, selectedModelIndex)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                
+                              </th>
+                              <th>
+                                <a ng-click="createallcontrollers()"><span class="badge">C</span></a>
+                                <a ng-click="createallviews()"><span class="badge">V</span></a>
+                                <a ng-click="newmodel()"><span class="glyphicon glyphicon-plus"></span></a>
+                                <a ng-click="removeallmodels()"><span class="glyphicon glyphicon-trash"></span></a>
+                              </th>
                             </tr>
                             <tr ng-show="searchModelFlag">
-                              <th colspan="6"><input class="form-control" ng-model="q.name" /></th>
+                              <th colspan="3"><input class="form-control" ng-model="q.name" /></th>
                             </tr>
                           </thead>
                           <tbody>
@@ -235,20 +255,18 @@
                                 ng-repeat="model in project.models | filter: q.name">
                               <td>{{ $index+1 }}</td>
                               <td>{{ model.name }}</td>
-<!--                               <td><span class="badge">{{ model.elements.length }}</span></td> -->
-                              <td><a ng-click="createcontroller(model)"><span class="badge">C</span></a></td>
-                              <td><a ng-click="createviews(model)"><span class="badge">V</span></a></td>
-                              <td><a ng-click="editmodel(model, $index)"><span class="glyphicon glyphicon-edit"></span></a>
-                              <a ng-click="moveUp(project.models, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(project.models, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                              <td>
+                                <a ng-click="createcontroller(model)"><span class="badge">C</span></a>
+                                <a ng-click="createviews(model)"><span class="badge">V</span></a>
+                                <a ng-click="editmodel(model, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                                <a ng-click="removemodel($index)"><span class="glyphicon glyphicon-trash"></span></a>
                               </td>
-                              <td><a ng-click="removemodel($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
                         </table>
                       </div>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-7">
                       <!-- Single button -->
                         <!--
                         <div class="btn-group">
@@ -316,15 +334,20 @@
                           <thead>
                             <tr>
                               <th>#</th>
-                              <th>Elements <a ng-click="searchElement()"><span class="badge">{{ selectedModel.elements.length }}</span></a></th>
-                              <th>Type</th>
-                              <th><a ng-click="newelement()"><span class="glyphicon glyphicon-plus"></span></a>
-                              <a ng-csv="exportElements()" filename="{{selectedModel.name}}.csv"><span class="glyphicon glyphicon-export"></span></a>
+                              <th>Elements
+                                <a ng-click="searchElement()"><span class="glyphicon glyphicon-search"></span></a>
+                                <a ng-click="moveUpElement(selectedModel.elements, selectedElementIndex)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                                <a ng-click="moveDownElement(selectedModel.elements, selectedElementIndex)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                
+                                <a ng-csv="exportElements()" filename="{{selectedModel.name}}.csv"><span class="glyphicon glyphicon-export"></span></a>
                               </th>
-                              <th><a ng-click="removeallelements()"><span class="glyphicon glyphicon-trash"></span></a></th>
+                              <th>Type</th>
+                              <th>
+                                <a ng-click="newelement()"><span class="glyphicon glyphicon-plus"></span></a>
+                                <a ng-click="removeallelements()"><span class="glyphicon glyphicon-trash"></span></a>
+                              </th>
                             </tr>
                             <tr ng-show="searchElementFlag">
-                              <th colspan="5"><input class="form-control" ng-model="e.elementname" /></th>
+                              <th colspan="4"><input class="form-control" ng-model="e.elementname" /></th>
                             </tr>
                           </thead>
                           <tbody>
@@ -334,11 +357,10 @@
                               <td>{{ $index+1 }}</td>
                               <td>{{ element.elementname }}</td>
                               <td>{{ element.elementtype }}</td>
-                              <td><a ng-click="editelement(element, $index)"><span class="glyphicon glyphicon-edit"></span></a>
-                              <a ng-click="moveUp(selectedModel.elements, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(selectedModel.elements, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                              <td>
+                                <a ng-click="editelement(element, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                                <a ng-click="removeelement($index)"><span class="glyphicon glyphicon-trash"></span></a>
                               </td>
-                              <td><a ng-click="removeelement($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
                         </table>
@@ -389,13 +411,19 @@
                           <thead>
                             <tr>
                               <th>#</th>
-                              <th>Nested Elements <a ng-click="searchNestedElement()"><span class="badge">{{ selectedElement.elements.length }}</span></a></th>
+                              <th>Nested Elements
+                                <a ng-click="searchNestedElement()"><span class="glyphicon glyphicon-search"></span></a>
+                                <a ng-click="moveUpNestedElement(selectedElement.elements, selectedNestedElementIndex)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                                <a ng-click="moveDownNestedElement(selectedElement.elements, selectedNestedElementIndex)"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                              </th>
                               <th>Type</th>
-                              <th><a ng-click="newnestedelement()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="removeallnestedelements()"><span class="glyphicon glyphicon-trash"></span></a></th>
+                              <th>
+                                <a ng-click="newnestedelement()"><span class="glyphicon glyphicon-plus"></span></a>
+                                <a ng-click="removeallnestedelements()"><span class="glyphicon glyphicon-trash"></span></a>
+                              </th>
                             </tr>
                             <tr ng-show="searchNestedElementFlag">
-                              <th colspan="5"><input class="form-control" ng-model="ne.elementname" /></th>
+                              <th colspan="4"><input class="form-control" ng-model="ne.elementname" /></th>
                             </tr>
                           </thead>
                           <tbody>
@@ -405,11 +433,10 @@
                               <td>{{ selectedElementIndex + 1 }}.{{ $index+1 }}</td>
                               <td>{{ nestedelement.elementname }}</td>
                               <td>{{ nestedelement.elementtype }}</td>
-                              <td><a ng-click="editnestedelement(nestedelement, $index)"><span class="glyphicon glyphicon-edit"></span></a>
-                              <a ng-click="moveUp(selectedElement.elements, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(selectedElement.elements, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                              <td>
+                                <a ng-click="editnestedelement(nestedelement, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                                <a ng-click="removenestedelement($index)"><span class="glyphicon glyphicon-trash"></span></a>
                               </td>
-                              <td><a ng-click="removenestedelement($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
                         </table>
@@ -463,13 +490,18 @@
                           <thead>
                             <tr>
                               <th>#</th>
-                              <th>Controllers  <a ng-click="searchController()"><span class="badge">{{ project.controllers.length }}</span></a></th>
-                              <th></th>
-                              <th><a ng-click="newcontroller()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="removeallcontrollers()"><span class="glyphicon glyphicon-trash"></span></a></th>
+                              <th>Controllers
+                                <a ng-click="searchController()"><span class="glyphicon glyphicon-search"></span></a>
+                                <a ng-click="moveUpController(project.controllers, selectedControllerIndex)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                                <a ng-click="moveDownController(project.controllers, selectedControllerIndex)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                
+                              </th>
+                              <th>
+                                <a ng-click="newcontroller()"><span class="glyphicon glyphicon-plus"></span></a>
+                                <a ng-click="removeallcontrollers()"><span class="glyphicon glyphicon-trash"></span></a>
+                              </th>
                             </tr>
                             <tr ng-show="searchControllerFlag">
-                              <th colspan="5"><input class="form-control" ng-model="ct.controllername" /></th>
+                              <th colspan="3"><input class="form-control" ng-model="ct.controllername" /></th>
                             </tr>
                           </thead>
                           <tbody>
@@ -478,12 +510,9 @@
                                 ng-repeat="controller in project.controllers | filter: ct.controllername">
                               <td>{{ $index+1 }}</td>
                               <td>{{ controller.controllername }}</td>
-                              <td><span class="badge">{{ controller.methods.length }}</span></td>
-                              <td><a ng-click="editcontroller(controller, $index)"><span class="glyphicon glyphicon-edit"></span></a>
-                              <a ng-click="moveUp(project.controllers, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(project.controllers, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
-                              </td>
-                              <td><a ng-click="removecontroller($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
+                              <td>
+                                <a ng-click="editcontroller(controller, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                                <a ng-click="removecontroller($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
                         </table>
@@ -491,7 +520,7 @@
                       <!-- controller table ends here -->
                     </div>
                     <!-- method starts here -->
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                       <!-- method popup starts here -->
                       <script type="text/ng-template" id="methodContent.html">
                         <div class="modal-header">
@@ -541,12 +570,14 @@
                           <thead>
                             <tr>
                               <th>#</th>
-                              <th>Methods  <a ng-click="searchMethod()"><span class="badge">{{ selectedController.methods.length }}</span></a></th>
-                              <th><a ng-click="newmethod()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="removeallmethods()"><span class="glyphicon glyphicon-trash"></span></a></th>
+                              <th>Methods<a ng-click="searchMethod()"><span class="glyphicon glyphicon-search"></span></a></th>
+                              <th>
+                                <a ng-click="newmethod()"><span class="glyphicon glyphicon-plus"></span></a>
+                                <a ng-click="removeallmethods()"><span class="glyphicon glyphicon-trash"></span></a>
+                              </th>
                             </tr>
                             <tr ng-show="searchMethodFlag">
-                              <th colspan="4"><input class="form-control" ng-model="md.methodname" /></th>
+                              <th colspan="3"><input class="form-control" ng-model="md.methodname" /></th>
                             </tr>
                           </thead>
                           <tbody>
@@ -555,8 +586,10 @@
                                 ng-repeat="method in selectedController.methods | filter: md.methodname">
                               <td>{{ $index+1 }}</td>
                               <td>{{ method.methodname }}</td>
-                              <td><a ng-click="editmethod(method, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
-                              <td><a ng-click="removemethod($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
+                              <td>
+                                <a ng-click="editmethod(method, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                                <a ng-click="removemethod($index)"><span class="glyphicon glyphicon-trash"></span></a>
+                              </td>
                             </tr>
                           </tbody>
                         </table>
@@ -565,7 +598,7 @@
                     </div>
                     <!-- method ends here -->
                     <!-- service starts -->
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                       <script type="text/ng-template" id="serviceContent.html">
                         <div class="modal-header">
                             <h3 class="modal-title">Service Details</h3>
@@ -634,12 +667,18 @@
                           <thead>
                             <tr>
                               <th>#</th>
-                              <th>Lookups  <a ng-click="searchLookup()"><span class="badge">{{ selectedController.lookups.length }}</span></a></th>
-                              <th><a ng-click="newlookup()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="removealllookups()"><span class="glyphicon glyphicon-trash"></span></a></th>
+                              <th>Lookups
+                                <a ng-click="searchLookup()"><span class="glyphicon glyphicon-search"></span></a>
+                                <a ng-click="moveUpLookup(selectedController.lookups, selectedLookupIndex)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                                <a ng-click="moveDownLookup(selectedController.lookups, selectedLookupIndex)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                
+                              </th>
+                              <th>
+                                <a ng-click="newlookup()"><span class="glyphicon glyphicon-plus"></span></a>
+                                <a ng-click="removealllookups()"><span class="glyphicon glyphicon-trash"></span></a>
+                              </th>
                             </tr>
                             <tr ng-show="searchLookupFlag">
-                              <th colspan="4"><input class="form-control" ng-model="l.lookupname" /></th>
+                              <th colspan="3"><input class="form-control" ng-model="l.lookupname" /></th>
                             </tr>
                           </thead>
                           <tbody>
@@ -648,11 +687,10 @@
                                 ng-repeat="lookup in selectedController.lookups | filter: l.lookupname">
                               <td>{{ $index+1 }}</td>
                               <td>{{ lookup.lookupname }}</td>
-                              <td><a ng-click="editlookup(lookup, $index)"><span class="glyphicon glyphicon-edit"></span></a>
-                              <a ng-click="moveUp(selectedController.lookups, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(selectedController.lookups, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                              <td>
+                                <a ng-click="editlookup(lookup, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                                <a ng-click="removelookup($index)"><span class="glyphicon glyphicon-trash"></span></a>
                               </td>
-                              <td><a ng-click="removelookup($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
                         </table>
@@ -715,13 +753,18 @@
                           <thead>
                             <tr>
                               <th>#</th>
-                              <th>Views  <a ng-click="searchView()"><span class="badge">{{ project.views.length }}</span></a></th>
-                              <th></th>
-                              <th><a ng-click="newview()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="removeallviews()"><span class="glyphicon glyphicon-trash"></span></a></th>
+                              <th>Views
+                                <a ng-click="searchView()"><span class="glyphicon glyphicon-search"></span></a>
+                                <a ng-click="moveUpView(project.views, selectedViewIndex)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                                <a ng-click="moveDownView(project.views, selectedViewIndex)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                
+                              </th>
+                              <th>
+                                <a ng-click="newview()"><span class="glyphicon glyphicon-plus"></span></a>
+                                <a ng-click="removeallviews()"><span class="glyphicon glyphicon-trash"></span></a>
+                              </th>
                             </tr>
                             <tr ng-show="searchViewFlag">
-                              <th colspan="5"><input class="form-control" ng-model="v.viewname" /></th>
+                              <th colspan="3"><input class="form-control" ng-model="v.viewname" /></th>
                             </tr>
                           </thead>
                           <tbody>
@@ -730,12 +773,10 @@
                                 ng-repeat="view in project.views | filter: v.viewname">
                               <td>{{ $index+1 }}</td>
                               <td>{{ view.viewname }}</td>
-                              <td><span class="badge">{{ view.sections.length }}</span></td>
-                              <td><a ng-click="editview(view, $index)"><span class="glyphicon glyphicon-edit"></span></a>
-                              <a ng-click="moveUp(project.views, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(project.views, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                              <td>
+                                <a ng-click="editview(view, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                                <a ng-click="removeview($index)"><span class="glyphicon glyphicon-trash"></span></a>
                               </td>
-                              <td><a ng-click="removeview($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
                         </table>
@@ -771,12 +812,16 @@
                           <thead>
                             <tr>
                               <th>#</th>
-                              <th>Sections <a ng-click="searchSection()"><span class="badge">{{ selectedView.sections.length }}</span></a></th>
-                              <th><a ng-click="newsection()"><span class="glyphicon glyphicon-plus"></span></a></th>
-                              <th><a ng-click="removeallsections()"><span class="glyphicon glyphicon-trash"></span></a></th>
+                              <th>Sections
+                                <a ng-click="searchSection()"><span class="glyphicon glyphicon-search"></span></a>
+                              </th>
+                              <th>
+                                <a ng-click="newsection()"><span class="glyphicon glyphicon-plus"></span></a>
+                                <a ng-click="removeallsections()"><span class="glyphicon glyphicon-trash"></span></a>
+                              </th>
                             </tr>
                             <tr ng-show="searchSectionFlag">
-                              <th colspan="4"><input class="form-control" ng-model="sec.sectionname" /></th>
+                              <th colspan="3"><input class="form-control" ng-model="sec.sectionname" /></th>
                             </tr>
                           </thead>
                           <tbody>
@@ -785,8 +830,10 @@
                                 ng-repeat="section in selectedView.sections | filter: sectionname">
                               <td>{{ $index+1 }}</td>
                               <td>{{ section.controllername }}</td>
-                              <td><a ng-click="editsection(section, $index)"><span class="glyphicon glyphicon-edit"></span></a></td>
-                              <td><a ng-click="removesection($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
+                              <td>
+                                <a ng-click="editsection(section, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                                <a ng-click="removesection($index)"><span class="glyphicon glyphicon-trash"></span></a>
+                              </td>
                             </tr>
                           </tbody>
                         </table>
@@ -953,18 +1000,21 @@
                           <thead>
                             <tr>
                               <th>#</th>
-                              <th>Controls  <a ng-click="searchControl()"><span class="badge">{{ selectedSection.controls.length }}</span></a></th>
-                              <th>Type
-                              <a ng-click="copycontrols()"><span class="glyphicon glyphicon-import"></span></a>
-                              <a ng-csv="exportControls()" filename="controls.csv"><span class="glyphicon glyphicon-export"></span></a>
+                              <th>Controls
+                                <a ng-click="searchControl()"><span class="glyphicon glyphicon-search"></span></a>
+                                <a ng-click="moveUpControl(selectedSection.controls, selectedControlIndex)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                                <a ng-click="moveDownControl(selectedSection.controls, selectedControlIndex)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                
+                                <a ng-click="copycontrols()"><span class="glyphicon glyphicon-import"></span></a>
+                                <a ng-csv="exportControls()" filename="controls.csv"><span class="glyphicon glyphicon-export"></span></a>                                
                               </th>
-                              <th><a ng-click="newcontrol()"><span class="glyphicon glyphicon-plus"></span></a></th>
+                              <th>Type</th>
                               <th>
-                              <a ng-click="removeallcontrols()"><span class="glyphicon glyphicon-trash"></span></a>
+                                <a ng-click="newcontrol()"><span class="glyphicon glyphicon-plus"></span></a>
+                                <a ng-click="removeallcontrols()"><span class="glyphicon glyphicon-trash"></span></a>
                               </th>
                             </tr>
                             <tr ng-show="searchControlFlag">
-                              <th colspan="5"><input class="form-control" ng-model="c.controlname" /></th>
+                              <th colspan="4"><input class="form-control" ng-model="c.controlname" /></th>
                             </tr>
                           </thead>
                           <tbody>
@@ -974,11 +1024,10 @@
                               <td>{{ $index+1 }}</td>
                               <td>{{ control.controllabel }}</td>
                               <td>{{ control.controltype }}</td>
-                              <td><a ng-click="editcontrol(control, $index)"><span class="glyphicon glyphicon-edit"></span></a>
-                              <a ng-click="moveUp(selectedSection.controls, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(selectedSection.controls, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                              <td>
+                                <a ng-click="editcontrol(control, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                                <a ng-click="removecontrol($index)"><span class="glyphicon glyphicon-trash"></span></a>
                               </td>
-                              <td><a ng-click="removecontrol($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
                         </table>
@@ -988,15 +1037,19 @@
                           <thead>
                             <tr>
                               <th>#</th>
-                              <th>Nested Controls  <a ng-click="searchNestedControl()"><span class="badge">{{ selectedControl.nestedcontrols.length }}</span></a></th>
+                              <th>Nested Controls
+                                <a ng-click="searchNestedControl()"><span class="glyphicon glyphicon-search"></span></a>
+                                <a ng-click="moveUpNestedControl(selectedControl.nestedcontrols, selectedNestedControlIndex)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                                <a ng-click="moveDownNestedControl(selectedControl.nestedcontrols, selectedNestedControlIndex)"><span class="glyphicon glyphicon-arrow-down"></span></a>                                
+                              </th>
                               <th>Type</th>
-                              <th><a ng-click="newnestedcontrol()"><span class="glyphicon glyphicon-plus"></span></a></th>
                               <th>
-                              <a ng-click="removeallnestedcontrols()"><span class="glyphicon glyphicon-trash"></span></a>
+                                <a ng-click="newnestedcontrol()"><span class="glyphicon glyphicon-plus"></span></a>
+                                <a ng-click="removeallnestedcontrols()"><span class="glyphicon glyphicon-trash"></span></a>
                               </th>
                             </tr>
                             <tr ng-show="searchNestedControlFlag">
-                              <th colspan="5"><input class="form-control" ng-model="nc.controlname" /></th>
+                              <th colspan="4"><input class="form-control" ng-model="nc.controlname" /></th>
                             </tr>
                           </thead>
                           <tbody>
@@ -1006,11 +1059,10 @@
                               <td>{{ $index+1 }}</td>
                               <td>{{ nestedcontrol.controllabel }}</td>
                               <td>{{ nestedcontrol.controltype }}</td>
-                              <td><a ng-click="editnestedcontrol(nestedcontrol, $index)"><span class="glyphicon glyphicon-edit"></span></a>
-                              <a ng-click="moveUp(selectedControl.nestedcontrols, $index)"><span class="glyphicon glyphicon-arrow-up"></span></a>
-                              <a ng-click="moveDown(selectedControl.nestedcontrols, $index)"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                              <td>
+                                <a ng-click="editnestedcontrol(nestedcontrol, $index)"><span class="glyphicon glyphicon-edit"></span></a>
+                                <a ng-click="removenestedcontrol($index)"><span class="glyphicon glyphicon-trash"></span></a>
                               </td>
-                              <td><a ng-click="removenestedcontrol($index)"><span class="glyphicon glyphicon-trash"></span></a></td>
                             </tr>
                           </tbody>
                         </table>
