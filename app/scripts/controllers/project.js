@@ -628,6 +628,10 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
           },
           models: function () {
             return $scope.project.models;
+          },
+          selements: function () {
+            var selements = [];
+            return selements;
           }
         }
       });
@@ -685,18 +689,20 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
           },
           selements: function () {
             var selements = [];
-            var model = $scope.project.models.filter( function (model) {
-              if(model.name === data.schemaobjref) {
-                return model;
-              }
-            })[0];       
-            if (model.elements) {
-              model.elements.forEach( function (element) {
-                if (element.elementtype !== 'Nested' && element.elementtype !== 'Schema.Types.ObjectId') {
-                  selements.push(element.elementname);
+            if (data.schemaobjref) {
+              var model = $scope.project.models.filter( function (model) {
+                if(model.name === data.schemaobjref) {
+                  return model;
                 }
-              });
-            }            
+              })[0];       
+              if (model.elements) {
+                model.elements.forEach( function (element) {
+                  if (element.elementtype !== 'Nested' && element.elementtype !== 'Schema.Types.ObjectId') {
+                    selements.push(element.elementname);
+                  }
+                });
+              }            
+            }
             return selements;
           }
         }
