@@ -2094,7 +2094,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
       window.print();
     };
 
-    $scope.moduleList = [];
+    /* $scope.moduleList = [];
     var statictext = 'yo meanjs:crud-module ';
     $scope.listModules = function () {
       $scope.moduleList.splice(0);
@@ -2102,7 +2102,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
         $scope.moduleList.push(statictext + changeCase.titleCase(item.name).replace(/ /g, '-'));
       });
 
-    };
+    }; */
 
   });
 
