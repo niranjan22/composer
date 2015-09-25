@@ -1750,6 +1750,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                   exampletext   : data.exampletext,
                   modelname     : data.modelname,
                   displayelement: data.displayelement,
+                  calculation: data.calculation,
                   isreadonly    : data.isreadonly};
             }
             return c;
@@ -1810,7 +1811,8 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
               isreadonly    : control.isreadonly,
               exampletext   : control.exampletext,
               modelname     : control.modelname,
-              displayelement: control.displayelement};
+              displayelement: control.displayelement,
+              calculation   : control.calculation};
         }
         $scope.selectedSection.controls[index] = c;
       }, function () {
@@ -1867,7 +1869,8 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                             controllabel: nestedcontrol.controllabel,
                             exampletext : nestedcontrol.exampletext,
                             modelname   : nestedcontrol.modelname,
-                            displayelement: control.displayelement};
+                            displayelement: control.displayelement,
+                            calculation: control.calculation};
                 c.nestedcontrols.push(nc);
               }
             } else {
@@ -1878,7 +1881,8 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                         controllabel: control.controllabel,
                         exampletext : control.exampletext,
                         modelname   : control.modelname,
-                        displayelement: control.displayelement};
+                        displayelement: control.displayelement,
+                        calculation: contrl.calculation};
             }
             controls.push(c);
           }
@@ -1954,7 +1958,8 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                       controllabel: data.controllabel,
                       exampletext : data.exampletext,
                       modelname   : data.modelname,
-                      displayelement: data.displayelement};
+                      displayelement: data.displayelement,
+                      calculation: data.calculation};
             return c;
           },
           models: function () {
