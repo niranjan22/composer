@@ -1740,6 +1740,10 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
             if ($scope.selectedView) {
               return $scope.selectedView.viewtype;
             }
+          },
+          selements: function () {
+            var selements = [];
+            return selements;
           }
         }
       });
