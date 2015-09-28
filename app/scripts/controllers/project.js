@@ -473,6 +473,29 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
         $scope.selectedElementIndex = null;
       }
     };
+    
+    $scope.setsequence = function (data) {
+      var modalInstance = $modal.open({
+        animation: false,
+        templateUrl: 'setSequence.html',
+        controller: 'SetSequenceCtrl',
+        size: 'sm',
+        resolve: {
+          elements: function () {
+            return data.elements;
+          },
+          sequence: function () {
+            return data.sequence;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (sequence) {
+        data.sequence = sequence;
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });
+    };
 
     $scope.removeallmodels = function () {
       toaster.pop('error', "Model", 'All items, deleted');
@@ -497,11 +520,10 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
     };    
     
     $scope.createcontroller = function (data) {
-      var ptemplates = [];
-      var pmethods = [];
+      var ptemplates = ['init','create','remove','update','find','findOne','standAlone'];
+      var pmethods = ['init','create','remove','update','find','findOne'];
+        
       if ($scope.hasNestedElements(data)){
-        ptemplates = ['create','remove','update','find','findOne','standAlone'];
-        pmethods = ['create','remove','update','find','findOne'];
         if (data.elements) {
           data.elements.forEach( function (element) {
             if (element.elementtype === 'Nested') {
@@ -510,10 +532,8 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
             }
           });
         }        
-      }else{
-        ptemplates = ['create','remove','update','find','findOne','standAlone'];
-        pmethods = ['create','remove','update','find','findOne'];
-      }      
+      }
+      
       var modalInstance = $modal.open({
         animation: false,
         templateUrl: 'createController.html',
@@ -533,14 +553,15 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
       });
       
       modalInstance.result.then(function (methods) {
-        var ct = {controllername: data.name + ' Controller',
+        var ct = {controllername: changeCase.pascalCase(data.name) + 'Controller',
                   modelname: data.name,
                   services: [],
                   lookups: [],
                   methods: []};
         
         methods.forEach( function (method) {
-          if (method === 'create' || method === 'remove' || method === 'update' || method === 'find' || method === 'findOne' || method === 'standAlone'){
+          
+          if (['init', 'create', 'remove', 'update', 'find', 'findOne', 'standAlone'].indexOf(method)>-1){
             ct.methods.push({methodname: method, methodtype: method});
           } else {
             ct.methods.push({methodname: method, methodtype: 'Modal'});
@@ -599,24 +620,24 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
 
       modalInstance.result.then(function (output) {
         output.views.forEach(function(viewtype) {
-          var viewname = '';
-          if(viewtype === 'create'){
-            viewname = 'New ' + changeCase.titleCase(data.name);
-          }else if(viewtype === 'edit'){
-            viewname = 'Update ' + changeCase.titleCase(data.name);
-          }else if(viewtype === 'list'){
-            viewname = changeCase.titleCase(data.name) + ' list';
-          }else if(viewtype === 'view'){
-            viewname = 'View ' + changeCase.titleCase(data.name);
-          }
+          var v = {viewtype   : viewtype,
+                    modelname : data.name,
+                    menuname  : output.menuname,
+                    sections  : [{controllername: changeCase.pascalCase(data.name) + 'Controller', sectionsize: 12, controls: []}]};
 
-          var v = {viewtype: viewtype,
-                    viewname: viewname,
-                    modelname: data.name,
-                    menuname: output.menuname,
-                    sections: [{controllername: data.name + ' Controller',
-                                sectionsize: 12,
-                                controls: []}]};
+          if(viewtype === 'create'){
+            v.viewname = 'New ' + changeCase.titleCase(data.name);
+            v.sections[0].methodname = 'init';
+          }else if(viewtype === 'edit'){
+            v.viewname = 'Update ' + changeCase.titleCase(data.name);
+            v.sections[0].methodname = 'findOne';
+          }else if(viewtype === 'list'){
+            v.viewname = changeCase.titleCase(data.name) + ' list';
+            v.sections[0].methodname = 'find';
+          }else if(viewtype === 'view'){
+            v.viewname = 'View ' + changeCase.titleCase(data.name);
+            v.sections[0].methodname = 'findOne';
+          }
 
           for(var i = 0; i < data.elements.length; i++) {
             var e = data.elements[i];
@@ -991,14 +1012,14 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
         
         var methods = [];
         data.methods.forEach( function (method) {
-          if (method === 'create' || method === 'remove' || method === 'update' || method === 'find' || method === 'findOne' || method === 'standAlone'){
+          if (['create', 'remove', 'update', 'find', 'findOne', 'standAlone', 'init'].indexOf(method)>-1){
             methods.push({methodname: method, methodtype: method});
           } else {
             methods.push({methodname: method, methodtype: 'Modal'});
           }
         });
 
-        var ct = {controllername: data.controllername,
+        var ct = {controllername: changeCase.pascalCase(data.controllername),
                   modelname: data.modelname,
                   methods: methods,
                   services: [],
@@ -1075,7 +1096,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
       });
 
       modalInstance.result.then(function (controller) {
-        var ct = {controllername  : controller.controllername,
+        var ct = {controllername  : changeCase.pascalCase(controller.controllername),
                   modelname       : controller.modelname,
                   services        : controller.services,
                   lookups         : controller.lookups,
@@ -1347,10 +1368,22 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
 
       modalInstance.result.then(function (view) {
         var v = {viewtype   : view.viewtype,
-                  viewname  : view.viewname,
                   modelname : view.modelname,
                   menuname  : view.menuname,
-                  sections  : [ {controllername: view.modelname + ' Controller', sectionsize: 12, controls: [] } ] };
+                  sections  : [ {controllername: changeCase.pascalCase(view.modelname) + 'Controller', sectionsize: 12, controls: [] } ] };
+        if(v.viewtype === 'create'){
+          v.viewname = 'New ' + changeCase.titleCase(view.modelname);
+          v.sections[0].methodname = 'init';
+        }else if(v.viewtype === 'edit'){
+          v.viewname = 'Update ' + changeCase.titleCase(view.modelname);
+          v.sections[0].methodname = 'findOne';
+        }else if(v.viewtype === 'list'){
+          v.viewname = changeCase.titleCase(view.modelname + ' list') ;
+          v.sections[0].methodname = 'find';
+        }else if(v.viewtype === 'view'){
+          v.viewname = 'View ' + changeCase.titleCase(view.modelname);
+          v.sections[0].methodname = 'findOne';
+        }
 
         var md = $scope.project.models.filter(function (model) {
                     if (model.name === view.modelname) {
@@ -1466,10 +1499,22 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
 
       modalInstance.result.then(function (view) {
         var v = {viewtype   : view.viewtype,
-                  viewname  : view.viewname,
                   modelname : view.modelname,
                   menuname  : view.menuname,
-                  sections  : [ {controllername: view.modelname + ' Controller', sectionsize: 12, controls: [] } ] };
+                  sections  : [ {controllername: changeCase.pascalCase(view.modelname) + 'Controller', sectionsize: 12, controls: [] } ] };
+        if(v.viewtype === 'create'){
+          v.viewname = 'New ' + changeCase.titleCase(view.modelname);
+          v.sections[0].methodname = 'init';
+        }else if(v.viewtype === 'edit'){
+          v.viewname = 'Update ' + changeCase.titleCase(view.modelname);
+          v.sections[0].methodname = 'findOne';
+        }else if(v.viewtype === 'list'){
+          v.viewname = changeCase.titleCase(view.modelname + ' list') ;
+          v.sections[0].methodname = 'find';
+        }else if(v.viewtype === 'view'){
+          v.viewname = 'View ' + changeCase.titleCase(view.modelname);
+          v.sections[0].methodname = 'findOne';
+        }
 
         var md = $scope.project.models.filter(function (model) {
           if (model.name === view.modelname) {
@@ -1594,11 +1639,15 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
         resolve: {
           section: function () {
             var se = {controllername: '',
-                      sectionsize: 12};
+                      methodname    : '',
+                      sectionsize   : 12};
             return se;
           },
           controllers: function () {
             return $scope.project.controllers;
+          },
+          methods: function () {
+            return [];
           }
         }
       });
@@ -1626,11 +1675,20 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
         resolve: {
           section: function () {
             var se = {controllername: data.controllername,
-                      sectionsize: data.sectionsize};
+                      methodname    : data.methodname,
+                      sectionsize   : data.sectionsize};
             return se;
           },
           controllers: function () {
             return $scope.project.controllers;
+          },
+          methods: function () {
+            var controller = $scope.project.controllers.filter( function (controller) {
+              if(controller.controllername === data.controllername){
+                return controller;
+              }
+            })[0];
+            return controller.methods;
           }
         }
       });
@@ -1869,8 +1927,8 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                             controllabel: nestedcontrol.controllabel,
                             exampletext : nestedcontrol.exampletext,
                             modelname   : nestedcontrol.modelname,
-                            displayelement: control.displayelement,
-                            calculation: control.calculation};
+                            displayelement: nestedcontrol.displayelement,
+                            calculation : nestedcontrol.calculation};
                 c.nestedcontrols.push(nc);
               }
             } else {
@@ -1882,7 +1940,7 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
                         exampletext : control.exampletext,
                         modelname   : control.modelname,
                         displayelement: control.displayelement,
-                        calculation: contrl.calculation};
+                        calculation : control.calculation};
             }
             controls.push(c);
           }
@@ -2284,7 +2342,7 @@ angular.module('composerApp').controller('ControllerInstanceCtrl', function ($sc
         return model;
       }
     })[0];
-    $scope.controller.controllername = $scope.controller.modelname + ' ' + 'Controller';
+    $scope.controller.controllername = $scope.controller.modelname + 'Controller';
     $scope.templates = ['create','remove','update','find','findOne','standAlone'];
     if (model.elements) {
       model.elements.reduce( function (template, element) {
@@ -2377,11 +2435,21 @@ angular.module('composerApp').controller('ViewInstanceCtrl', function ($scope, $
 
 });
 
-angular.module('composerApp').controller('SectionInstanceCtrl', function ($scope, $modalInstance, section, controllers) {
+angular.module('composerApp').controller('SectionInstanceCtrl', function ($scope, $modalInstance, section, controllers, methods) {
 
   $scope.section      = section;
   $scope.controllers  = controllers;
-
+  $scope.methods      = methods;
+  
+  $scope.fetchMethodslist = function (controllername) {
+    var controller = $scope.controllers.filter( function (controller) {
+      if(controller.controllername === controllername){
+        return controller;
+      }
+    })[0];
+    $scope.methods = controller.methods;
+  };
+  
   $scope.ok = function () {
     $modalInstance.close($scope.section);
   };
@@ -2440,6 +2508,21 @@ angular.module('composerApp').controller('CopyControlsInstanceCtrl', function ($
 
   $scope.ok = function () {
     $modalInstance.close($scope.section);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+
+});
+
+angular.module('composerApp').controller('SetSequenceCtrl', function ($scope, $modalInstance, elements, sequence) {
+
+  $scope.elements = elements;
+  $scope.sequence = sequence;
+  
+  $scope.ok = function () {
+    $modalInstance.close($scope.sequence);
   };
 
   $scope.cancel = function () {

@@ -186,7 +186,7 @@
                           </div>
                           <div class="form-group">
                             <label for="method-type">Method</label>
-                            <select multiple id="method-type" class="form-control" size='7'
+                            <select multiple id="method-type" class="form-control" size='8'
                               ng-model="methods"
                               ng-required="true"
                               ng-options="template for template in templates" />
@@ -228,6 +228,26 @@
                             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
                         </div>
                       </script>
+                      <script type="text/ng-template" id="setSequence.html">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Set Sequence</h3>
+                        </div>
+                        <div class="modal-body">
+                          <div class="form-group">
+                            <label for="sequence-element-name">Sequence Element Name</label>
+                            <select id="sequence-element-name" class="form-control"
+                              ng-model="sequence"
+                              ng-required="true"
+                              ng-options="element.elementname as element.elementname for element in elements">
+                              <option value="">No Sequence</option>
+                            </select>                            
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" ng-click="ok()">OK</button>
+                            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                        </div>
+                      </script>                      
                       <div class="table">
                         <table id="tblModel" class="table">
                           <thead>
@@ -260,6 +280,7 @@
                                 <a ng-click="createviews(model)"><span class="badge">V</span></a>
                                 <a ng-click="editmodel(model, $index)"><span class="glyphicon glyphicon-edit"></span></a>
                                 <a ng-click="removemodel($index)"><span class="glyphicon glyphicon-trash"></span></a>
+                                <a ng-click="setsequence(model)"><span class="glyphicon glyphicon-list"></span></a>
                               </td>
                             </tr>
                           </tbody>
@@ -538,6 +559,7 @@
                               <div class="form-group">
                                 <label for="method-type">Method Type</label>
                                 <select class="form-control" ng-model="method.methodtype" id="method-type">
+                                  <option value="init">init</option>
                                   <option value="create">create</option>
                                   <option value="remove">remove</option>
                                   <option value="update">update</option>
@@ -549,7 +571,8 @@
                               </div>
                             </div>
                           </div>
-                          <div ng-show="method.methodtype === 'Modal' || method.methodtype ==='standAlone'" class="row">
+                          
+                          <div ng-show="['Modal', 'standAlone', 'init'].indexOf(method.methodtype)>-1" class="row">
                             <div class="col-md-12">
                               <div class="form-group">
                                 <label for="method-content">Method Content</label>
@@ -714,10 +737,6 @@
                         </div>
                         <div class="modal-body">
                           <div class="form-group">
-                            <label for="view-name">View Name</label>
-                            <input ng-model="view.viewname" type="text" class="form-control" id="view-name" placeholder="" />
-                          </div>
-                          <div class="form-group">
                             <label for="view-type">View Type</label>
                             <select id="view-type" class="form-control"
                               ng-model="view.viewtype"
@@ -795,7 +814,15 @@
                             <select id="section-name" class="form-control"
                               ng-model="section.controllername"
                               ng-required="true"
+                              ng-change="fetchMethodslist(section.controllername)"
                               ng-options="controller.controllername as controller.controllername for controller in controllers" />
+                          </div>
+                          <div class="form-group">
+                            <label for="method-name">Method Name</label>
+                            <select id="method-name" class="form-control"
+                              ng-model="section.methodname"
+                              ng-required="true"
+                              ng-options="method.methodname as method.methodname for method in methods" />
                           </div>
                           <div class="form-group">
                             <label for="section-size">Size</label>
