@@ -1664,6 +1664,13 @@ angular.module('composerApp').controller('ProjectCtrl', function ($scope, $modal
     $scope.selectSection = function (section, index) {
       $scope.selectedSection = section;
       $scope.selectedSectionIndex = index;
+      $scope.selectedControl = null;
+      $scope.selectedControlIndex = null;
+      $scope.selectedControl = null;
+      $scope.selectedControlIndex = null;
+      $scope.selectedNestedControl = null;
+      $scope.selectedNestedControlIndex = null;
+      
     };
 
     $scope.editsection = function (data, index) {
